@@ -1,5 +1,6 @@
 import type { Server as SocketServer, Socket } from 'socket.io';
 
+import { chatService, type ChatMessageRecord, type ChatService } from '../../modules/chat/index.js';
 import {
   auctionEngineService,
   type AuctionEngineActor,
@@ -8,6 +9,7 @@ import {
   type PlaceBidResult
 } from '../../modules/auction-engine/index.js';
 import { logger } from '../../config/logger.js';
+import { AppError } from '../../shared/errors/AppError.js';
 import { auctionPresenceService, type AuctionPresenceService } from './auctionPresence.service.js';
 import { REALTIME_EVENTS } from './realtime.types.js';
 
@@ -23,10 +25,16 @@ interface BidPlacePayload {
   requestId?: unknown;
 }
 
+interface ChatSendPayload {
+  auctionId?: unknown;
+  message?: unknown;
+}
+
 export class AuctionRealtimeHandler {
   constructor(
     private readonly engine: AuctionEngineService = auctionEngineService,
-    private readonly presence: AuctionPresenceService = auctionPresenceService
+    private readonly presence: AuctionPresenceService = auctionPresenceService,
+    private readonly chat: ChatService = chatService
   ) {}
 
   registerSocket(io: SocketServer, socket: Socket): void {
@@ -44,6 +52,10 @@ export class AuctionRealtimeHandler {
 
     socket.on(REALTIME_EVENTS.BID_PLACE, (payload: BidPlacePayload, ack?: AckCallback<PlaceBidResult>) => {
       void this.handleBid(io, socket, payload, ack);
+    });
+
+    socket.on(REALTIME_EVENTS.CHAT_SEND, (payload: ChatSendPayload, ack?: AckCallback<ChatMessageRecord>) => {
+      void this.handleChatSend(io, socket, payload, ack);
     });
 
     socket.on('disconnect', () => {
@@ -174,6 +186,34 @@ export class AuctionRealtimeHandler {
     }
   }
 
+  private async handleChatSend(
+    io: SocketServer,
+    socket: Socket,
+    payload: ChatSendPayload,
+    ack?: AckCallback<ChatMessageRecord>
+  ): Promise<void> {
+    const auctionId = this.parseAuctionId(payload);
+    const message = typeof payload.message === 'string' ? payload.message : null;
+
+    if (!auctionId || message === null) {
+      this.fail(ack, 'INVALID_CHAT_PAYLOAD', 'auctionId and message are required');
+      return;
+    }
+
+    try {
+      const chatMessage = await this.chat.sendMessage({
+        auctionId,
+        message,
+        actor: this.actor(socket)
+      });
+
+      io.to(this.roomName(auctionId)).emit(REALTIME_EVENTS.CHAT_MESSAGE, chatMessage);
+      this.ok(ack, chatMessage);
+    } catch (error) {
+      this.handleError(socket, ack, error);
+    }
+  }
+
   private async handleDisconnect(io: SocketServer, socket: Socket): Promise<void> {
     const impactedAuctionIds = this.presence.leaveAll(socket.id);
 
@@ -238,10 +278,11 @@ export class AuctionRealtimeHandler {
 
   private handleError<T>(socket: Socket, ack: AckCallback<T> | undefined, error: unknown): void {
     logger.error({ error, socketId: socket.id }, 'Auction realtime handler failed');
+    const code = error instanceof AppError ? error.code : 'ROOM_ERROR';
     const message = error instanceof Error ? error.message : 'Realtime request failed';
-    this.fail(ack, 'ROOM_ERROR', message);
+    this.fail(ack, code, message);
     socket.emit(REALTIME_EVENTS.ROOM_ERROR, {
-      code: 'ROOM_ERROR',
+      code,
       message
     });
   }
