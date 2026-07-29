@@ -1,0 +1,5 @@
+.full-page-loader {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+}

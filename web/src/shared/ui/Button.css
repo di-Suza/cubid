@@ -1,0 +1,43 @@
+.button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0 14px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button--primary {
+  background: #1167b1;
+  color: #ffffff;
+}
+
+.button--secondary {
+  border-color: #c8d4e2;
+  background: #ffffff;
+  color: #17212b;
+}
+
+.button--ghost {
+  background: transparent;
+  color: #33485f;
+}
+
+.button--danger {
+  background: #b42318;
+  color: #ffffff;
+}

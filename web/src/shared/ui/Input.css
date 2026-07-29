@@ -1,0 +1,31 @@
+.input-field {
+  display: grid;
+  gap: 6px;
+  color: #33485f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.input {
+  min-height: 42px;
+  border: 1px solid #c8d4e2;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #ffffff;
+  color: #17212b;
+  font: inherit;
+}
+
+.input:focus {
+  border-color: #1167b1;
+  outline: 3px solid rgba(17, 103, 177, 0.16);
+}
+
+.input--error {
+  border-color: #b42318;
+}
+
+.input-field small {
+  color: #b42318;
+  font-weight: 600;
+}
