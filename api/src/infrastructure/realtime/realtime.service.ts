@@ -3,11 +3,15 @@ import { Server as SocketServer } from 'socket.io';
 
 import { env } from '../../config/env.js';
 import { logger } from '../../config/logger.js';
+import type { AuctionSnapshot } from '../../modules/auction-engine/index.js';
+import { auctionRealtimeHandler, type AuctionRealtimeHandler } from './auctionRealtime.handler.js';
 import { REALTIME_EVENTS } from './realtime.types.js';
 import { resolveSocketIdentity } from './socketAuth.js';
 
 export class RealtimeService {
   private io?: SocketServer;
+
+  constructor(private readonly auctionHandler: AuctionRealtimeHandler = auctionRealtimeHandler) {}
 
   attach(httpServer: HttpServer): SocketServer {
     this.io = new SocketServer(httpServer, {
@@ -32,6 +36,8 @@ export class RealtimeService {
         authenticated: Boolean(identity),
         serverNow: new Date().toISOString()
       });
+
+      this.auctionHandler.registerSocket(this.io as SocketServer, socket);
     });
 
     logger.info('Socket.IO gateway attached');
@@ -40,6 +46,18 @@ export class RealtimeService {
 
   get server(): SocketServer | undefined {
     return this.io;
+  }
+
+  broadcastAuctionStarted(snapshot: AuctionSnapshot): void {
+    if (this.io) {
+      this.auctionHandler.broadcastAuctionStarted(this.io, snapshot);
+    }
+  }
+
+  broadcastAuctionEnded(snapshot: AuctionSnapshot): void {
+    if (this.io) {
+      this.auctionHandler.broadcastAuctionEnded(this.io, snapshot);
+    }
   }
 }
 

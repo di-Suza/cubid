@@ -5,6 +5,7 @@ import { databaseConnection } from './config/db.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { realtimeService } from './infrastructure/realtime/index.js';
+import { auctionTimerService } from './modules/auction-engine/index.js';
 
 const bootstrap = async (): Promise<void> => {
   await databaseConnection.connect();
@@ -13,6 +14,10 @@ const bootstrap = async (): Promise<void> => {
   const httpServer = createServer(app);
 
   realtimeService.attach(httpServer);
+  await auctionTimerService.restoreTimers({
+    onAuctionStarted: (snapshot) => realtimeService.broadcastAuctionStarted(snapshot),
+    onAuctionEnded: (snapshot) => realtimeService.broadcastAuctionEnded(snapshot)
+  });
 
   httpServer.listen(env.port, () => {
     logger.info({ port: env.port, env: env.nodeEnv }, 'Cubid API listening');
@@ -21,6 +26,7 @@ const bootstrap = async (): Promise<void> => {
   const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
     logger.info({ signal }, 'Shutdown signal received');
     httpServer.close(async () => {
+      auctionTimerService.shutdown();
       await databaseConnection.disconnect();
       process.exit(0);
     });

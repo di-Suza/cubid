@@ -14,6 +14,8 @@ add it inside the existing architecture instead of creating a shortcut.
 5. Put Mongoose queries in the repository class.
 6. Add or update model indexes beside the schema.
 7. Reuse shared errors, constants, middleware, and validators.
+8. For auction mutations, use `AuctionEngineService` so bid ordering,
+   persistence-before-broadcast, and finalization stay server-owned.
 
 ## Frontend Checklist
 
@@ -23,6 +25,16 @@ add it inside the existing architecture instead of creating a shortcut.
 4. Put durable shared types in `entities` when more than one feature needs
    them.
 5. Reuse shared UI and utilities before creating local copies.
+6. For live auction state, consume `useAuctionRoom` and `useBidIntent` instead
+   of opening ad hoc Socket.IO connections.
+7. For room chat, use `useAuctionChat` and `AuctionChatPanel`; chat must stay
+   non-blocking relative to bid processing.
+
+## Domain Ownership
+
+Domain B owns realtime sync and the server-authoritative auction engine. Domain
+A marketplace/auth/listing modules should not be changed for Domain B work
+unless a shared contract update is required.
 
 ## Commit Style
 

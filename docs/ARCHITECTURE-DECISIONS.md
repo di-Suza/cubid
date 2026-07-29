@@ -45,3 +45,20 @@ Status: Accepted
 
 Auctions, bids, timelines, payments, users, sessions, and chat records are
 stored in MongoDB. In-memory socket state is never durable truth.
+
+## ADR-006: Server-Authoritative Auction Engine
+
+Status: Accepted
+
+Bid intent is accepted only through the backend auction engine. The server
+derives the bidder from the socket session, processes one mutation at a time per
+auction, assigns the sequence, persists the accepted bid, and then broadcasts
+the resulting snapshot.
+
+## ADR-007: Reconnect By Full Snapshot
+
+Status: Accepted
+
+Realtime clients recover by joining the auction room and receiving a full
+snapshot containing `version` and `lastSequence`. Frontend hooks ignore older
+snapshots so delayed events cannot move the UI backward.
