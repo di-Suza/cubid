@@ -15,3 +15,7 @@ Current coverage includes:
 - `AuctionEngineService` accepted/rejected bid rules, duplicate request IDs,
   winner finalization, and no-bid finalization
 - `AuctionPresenceService` authenticated-user and guest counting
+- `AuctionRealtimeHandler` join, bid broadcast, ended-bid finalization, and
+  non-blocking chat broadcast
+- `AuctionTimerService` overdue start/end recovery
+- `ChatService` authenticated trim/persist validation

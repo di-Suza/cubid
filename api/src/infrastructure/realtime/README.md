@@ -14,6 +14,8 @@ Auction and bidding events are active through `AuctionRealtimeHandler`.
 | `auction:state` | server -> room | Authoritative state after accepted bid or lifecycle change. |
 | `bid:accepted` | server -> room | Accepted bid after durable persistence. |
 | `bid:rejected` | server -> client | Rejected bid intent with stable machine code. |
+| `chat:send` | client -> server | Persist authenticated room chat outside the bid queue. |
+| `chat:message` | server -> room | Broadcast persisted chat message. |
 | `stats:update` | server -> room | Non-blocking room presence/heat update. |
 | `auction:started` / `auction:ended` | server -> room | Timer-driven lifecycle snapshots. |
 

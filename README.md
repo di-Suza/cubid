@@ -10,7 +10,7 @@ The current baseline contains:
   health checks, domain skeletons, and the Domain B server-authoritative auction
   engine.
 - `web`: React, Vite, routing, app providers, RTK Query, shared UI, socket
-  client, realtime auction hooks, and feature/page skeletons.
+  client, realtime auction hooks, live room UI, and feature/page skeletons.
 - `contracts`: API contract ownership and future OpenAPI location.
 - `tests`: test strategy and planned gates.
 - `docs`: architecture decisions and implementation guidance.
@@ -55,5 +55,6 @@ permissions, timers, winner declaration, and payments.
 
 Domain B currently owns the auction engine, realtime room state, server timers,
 bid ordering, idempotent bid requests, finalization, and winner payment
-bootstrap. UI screens remain intentionally skeletal until the feature flows are
-implemented by their owning domain.
+bootstrap. The live auction room is wired to authoritative snapshots, bid
+intent acknowledgements, room stats, recent bids, timeline state, and
+non-blocking chat.

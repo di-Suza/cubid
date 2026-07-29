@@ -75,7 +75,10 @@ gateway.
   overdue auctions from MongoDB state.
 - `AuctionRealtimeHandler` owns Socket.IO room join/resync/leave/bid events and
   broadcasts only after authoritative state is ready.
+- `ChatService` persists authenticated room messages outside the auction queue
+  so chat cannot delay bid mutations.
 
 Frontend Domain B code currently lives in reusable hooks and shared contracts:
 `useAuctionRoom` for room lifecycle/snapshots and `useBidIntent` for bid intent
-acks. Route pages are still composition placeholders.
+acks. The live auction room page composes snapshots, bid form state, recent
+bids, timeline, room metrics, payment state, and chat.

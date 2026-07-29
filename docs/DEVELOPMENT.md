@@ -27,6 +27,8 @@ add it inside the existing architecture instead of creating a shortcut.
 5. Reuse shared UI and utilities before creating local copies.
 6. For live auction state, consume `useAuctionRoom` and `useBidIntent` instead
    of opening ad hoc Socket.IO connections.
+7. For room chat, use `useAuctionChat` and `AuctionChatPanel`; chat must stay
+   non-blocking relative to bid processing.
 
 ## Domain Ownership
 

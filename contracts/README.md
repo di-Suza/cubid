@@ -7,7 +7,8 @@ Initial status:
 - REST is the default HTTP API style.
 - Socket.IO event names are documented in the realtime infrastructure.
 - Domain B socket payloads are implemented for auction join/resync/leave,
-  bid intent, snapshots, accepted/rejected bids, stats, and lifecycle events.
+  bid intent, snapshots, accepted/rejected bids, stats, chat messages, and
+  lifecycle events.
 - OpenAPI can be added under `contracts/openapi` as endpoints become real.
 
 Contract rules:
