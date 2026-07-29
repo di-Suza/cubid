@@ -7,9 +7,10 @@ implementation starts.
 The current baseline contains:
 
 - `api`: Express, MongoDB, Socket.IO, middleware, errors, validators, configs,
-  health checks, and domain skeletons.
+  health checks, domain skeletons, and the Domain B server-authoritative auction
+  engine.
 - `web`: React, Vite, routing, app providers, RTK Query, shared UI, socket
-  client, and feature/page skeletons.
+  client, realtime auction hooks, and feature/page skeletons.
 - `contracts`: API contract ownership and future OpenAPI location.
 - `tests`: test strategy and planned gates.
 - `docs`: architecture decisions and implementation guidance.
@@ -49,3 +50,10 @@ app -> pages -> widgets -> features -> entities -> shared
 
 The backend is the single source of truth for auction state, bidding,
 permissions, timers, winner declaration, and payments.
+
+## Domain B Status
+
+Domain B currently owns the auction engine, realtime room state, server timers,
+bid ordering, idempotent bid requests, finalization, and winner payment
+bootstrap. UI screens remain intentionally skeletal until the feature flows are
+implemented by their owning domain.

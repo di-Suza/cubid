@@ -3,10 +3,15 @@
 Executable tests will live inside `api/tests` and `web/tests` so each package
 can compile and run independently.
 
+Current executable gates:
+
+- API auction queue serialization
+- API bid validation, ordering, duplicate request handling, and finalization
+- API room presence accounting
+
 Planned gates:
 
-- API validators and service rules
-- Auction queue and concurrent bid ordering
+- Additional API validators and route/controller behavior
 - Timer finalization and recovery
 - Payment idempotency
 - Socket snapshot and reconnect behavior

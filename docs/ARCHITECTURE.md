@@ -59,3 +59,23 @@ app -> pages -> widgets -> features -> entities -> shared
 - Payment amount and winner identity are derived from persisted state.
 - Reconnecting clients receive a full snapshot.
 - Chat and heat metrics never block bid processing.
+
+## Domain B Runtime
+
+Domain B is implemented around the `auction-engine` module and the realtime
+gateway.
+
+- `AuctionQueueService` serializes mutations per auction.
+- `AuctionEngineService` validates bid intent, assigns server sequences, writes
+  accepted bids before returning, and finalizes auctions idempotently.
+- `AuctionSnapshotService` builds reconnect-safe room snapshots with
+  `version`, `lastSequence`, recent bids, timeline, permissions, stats, and
+  payment status.
+- `AuctionTimerService` restores start/end timers on API boot and reconciles
+  overdue auctions from MongoDB state.
+- `AuctionRealtimeHandler` owns Socket.IO room join/resync/leave/bid events and
+  broadcasts only after authoritative state is ready.
+
+Frontend Domain B code currently lives in reusable hooks and shared contracts:
+`useAuctionRoom` for room lifecycle/snapshots and `useBidIntent` for bid intent
+acks. Route pages are still composition placeholders.
