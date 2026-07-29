@@ -1,0 +1,37 @@
+# Development Guide
+
+## First Principle
+
+Do not add feature behavior outside the owning module. If a file is missing,
+add it inside the existing architecture instead of creating a shortcut.
+
+## Backend Checklist
+
+1. Add or update the route class.
+2. Add validators before controller execution.
+3. Keep controller methods thin.
+4. Put business rules in the service class.
+5. Put Mongoose queries in the repository class.
+6. Add or update model indexes beside the schema.
+7. Reuse shared errors, constants, middleware, and validators.
+
+## Frontend Checklist
+
+1. Add route wrappers under `pages`.
+2. Keep workflow orchestration in feature hooks.
+3. Add RTK Query endpoints under the owning feature.
+4. Put durable shared types in `entities` when more than one feature needs
+   them.
+5. Reuse shared UI and utilities before creating local copies.
+
+## Commit Style
+
+Use concise conventional commits:
+
+```txt
+chore: initialize workspace docs
+feat(api): add health and middleware baseline
+feat(web): scaffold app shell
+test(api): cover bid validation rules
+docs: update architecture decisions
+```
