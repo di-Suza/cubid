@@ -1,0 +1,122 @@
+.auction-chat-panel {
+  display: grid;
+  min-height: 360px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  border: 1px solid #d9e1ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.auction-chat-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.auction-chat-panel__header h2 {
+  margin: 0;
+  color: #17212b;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.auction-chat-panel__header span {
+  display: inline-flex;
+  min-width: 30px;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #e8f3ed;
+  color: #137147;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auction-chat-panel__messages {
+  display: grid;
+  max-height: 420px;
+  align-content: start;
+  gap: 10px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.auction-chat-panel__message {
+  display: grid;
+  gap: 5px;
+  border: 1px solid #edf1f5;
+  border-radius: 8px;
+  background: #fbfcfe;
+  padding: 10px;
+}
+
+.auction-chat-panel__message div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #65758b;
+  font-size: 12px;
+}
+
+.auction-chat-panel__message strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #17212b;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auction-chat-panel__message p,
+.auction-chat-panel__empty,
+.auction-chat-panel__error {
+  margin: 0;
+}
+
+.auction-chat-panel__message p {
+  color: #33485f;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.auction-chat-panel__empty {
+  color: #65758b;
+  font-size: 14px;
+}
+
+.auction-chat-panel__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.auction-chat-panel__form input {
+  min-width: 0;
+  min-height: 42px;
+  border: 1px solid #c8d4e2;
+  border-radius: 8px;
+  padding: 0 12px;
+  color: #17212b;
+}
+
+.auction-chat-panel__form input:focus {
+  border-color: #1167b1;
+  outline: 3px solid rgba(17, 103, 177, 0.16);
+}
+
+.auction-chat-panel__error {
+  color: #b42318;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .auction-chat-panel__form {
+    grid-template-columns: 1fr;
+  }
+}
