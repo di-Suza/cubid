@@ -1,4 +1,7 @@
 import type { PublicUser } from '../user';
+import type { Bid } from '../bid';
+import type { PaymentStatus } from '../payment';
+import type { TimelineEvent } from '../timeline';
 
 export type AuctionStatus = 'UPCOMING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
 
@@ -27,19 +30,42 @@ export interface AuctionSummary {
   currency: string;
   startingBidMinor: number;
   currentHighestBidMinor: number;
+  highestBidder?: PublicUser | null;
+  minimumIncrementMinor: number;
+  bidCount?: number;
+  status: AuctionStatus;
+  startAt: string;
+  endAt: string;
+  version?: number;
+  lastSequence?: number;
+  finalizedAt?: string | null;
+  winner?: PublicUser | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AuctionSnapshot {
+  auctionId: string;
+  seller: PublicUser;
+  title: string;
+  description: string;
+  imageUrl: string;
+  currency: string;
+  startingBidMinor: number;
+  currentHighestBidMinor: number;
   minimumIncrementMinor: number;
   status: AuctionStatus;
   startAt: string;
   endAt: string;
-}
-
-export interface AuctionSnapshot extends AuctionSummary {
   highestBidder: PublicUser | null;
   minimumNextBidMinor: number;
   bidCount: number;
   version: number;
   lastSequence: number;
   serverNow: string;
+  recentBids: Bid[];
+  timeline: TimelineEvent[];
   permissions: AuctionPermissions;
   stats: AuctionStats;
+  paymentStatus: PaymentStatus;
 }

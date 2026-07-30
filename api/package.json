@@ -9,7 +9,9 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run typecheck"
+    "seed:demo": "tsx src/scripts/seedDemo.ts",
+    "clean:test": "node -e \"require('node:fs').rmSync('dist-tests', { recursive: true, force: true })\"",
+    "test": "npm run typecheck && npm run clean:test && tsc -p tsconfig.test.json && node --test --experimental-test-isolation=none dist-tests/tests/**/*.test.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

@@ -1,0 +1,175 @@
+.wins-page {
+  width: min(1120px, calc(100vw - 48px));
+  padding: 28px 0;
+}
+
+.wins-page__header {
+  margin-bottom: 18px;
+}
+
+.wins-page__header h1 {
+  margin: 8px 0 0;
+  color: var(--color-ink);
+  font-size: 34px;
+  line-height: 1.12;
+}
+
+.wins-page__error {
+  border: 1px solid #f4c7c3;
+  border-radius: 8px;
+  background: rgba(251, 113, 133, 0.12);
+  color: #b42318;
+  padding: 10px 12px;
+  font-weight: 800;
+}
+
+.wins-list {
+  display: grid;
+  gap: 14px;
+}
+
+.wins-list article,
+.wins-state {
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: rgba(21, 24, 33, 0.88);
+  box-shadow: var(--shadow-card);
+}
+
+.wins-list article {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 14px;
+}
+
+.wins-list img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.wins-list__body {
+  display: grid;
+  gap: 8px;
+}
+
+.wins-list__body h2,
+.wins-list__body p {
+  margin: 0;
+}
+
+.wins-list__body h2 {
+  color: var(--color-ink);
+  font-size: 22px;
+}
+
+.wins-list__body p {
+  color: var(--color-muted);
+}
+
+.wins-list__body strong {
+  color: var(--color-ink);
+  font-size: 20px;
+}
+
+.wins-list__body small {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: rgba(var(--color-accent-rgb), 0.16);
+  color: var(--color-coral-dark);
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.payment-pill {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 28px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.payment-pill--PENDING,
+.payment-pill--FAILED {
+  background: rgba(251, 191, 36, 0.14);
+  color: var(--color-warning);
+}
+
+.payment-pill--SUCCESSFUL {
+  background: rgba(18, 184, 134, 0.16);
+  color: #5eead4;
+}
+
+.payment-pill--NOT_REQUIRED {
+  background: rgba(167, 139, 250, 0.16);
+  color: #c4b5fd;
+}
+
+.wins-list__actions {
+  display: grid;
+  justify-items: stretch;
+  gap: 10px;
+}
+
+.wins-list__actions a {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-ink);
+  padding: 0 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.wins-state {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+  gap: 10px;
+  padding: 28px;
+  text-align: center;
+}
+
+.wins-state h2,
+.wins-state p {
+  margin: 0;
+}
+
+.wins-state h2 {
+  color: var(--color-ink);
+}
+
+.wins-state p {
+  color: var(--color-muted);
+}
+
+.wins-state--error p {
+  color: #b42318;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .wins-page {
+    width: min(100%, calc(100vw - 24px));
+    padding: 18px 0;
+  }
+
+  .wins-list article {
+    grid-template-columns: 1fr;
+  }
+}

@@ -14,3 +14,8 @@ export interface AuthCredentials {
 export interface RegisterPayload extends AuthCredentials {
   name: string;
 }
+
+export interface AuthResponse {
+  accessToken: string;
+  user: CurrentUser;
+}

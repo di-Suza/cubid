@@ -8,3 +8,20 @@ npm --prefix api test
 
 Use fakes for payment gateways, sockets, Redis, and external providers.
 Normal tests must not require network calls.
+
+Current coverage includes:
+
+- `AuthService` registration, duplicate email, login, refresh restore, and
+  logout revocation
+- `AuctionService` creation validation, public discovery/detail, owner queries,
+  and stable not-found behavior
+- `AuctionQueueService` per-auction serialization
+- `AuctionEngineService` accepted/rejected bid rules, duplicate request IDs,
+  winner finalization, and no-bid finalization
+- `AuctionPresenceService` authenticated-user and guest counting
+- `AuctionRealtimeHandler` join, bid broadcast, ended-bid finalization, and
+  non-blocking chat broadcast
+- `AuctionTimerService` overdue start/end recovery
+- `ChatService` authenticated trim/persist validation
+- `PaymentService` winner payment listing, non-winner rejection, and mock
+  success/failure transitions

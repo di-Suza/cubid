@@ -2,7 +2,7 @@
   "name": "cubid",
   "version": "0.1.0",
   "private": true,
-  "description": "Cubid BidArena full-stack TypeScript workspace.",
+  "description": "Cubid full-stack TypeScript workspace.",
   "type": "module",
   "scripts": {
     "dev:api": "npm --prefix api run dev",
@@ -14,6 +14,8 @@
     "check:web": "npm --prefix web run typecheck",
     "test:api": "npm --prefix api run test",
     "test:web": "npm --prefix web run test",
+    "test:e2e:smoke": "node tests/e2e/marketplace-smoke.mjs",
+    "seed:demo": "npm --prefix api run seed:demo",
     "test": "npm run test:api && npm run test:web",
     "check": "npm run check:api && npm run check:web",
     "verify": "npm run test && npm run check && npm run build:api && npm run build:web"

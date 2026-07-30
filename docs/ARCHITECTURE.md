@@ -1,6 +1,6 @@
 # Cubid Architecture Guide
 
-This document is the working architecture baseline for the BidArena sprint.
+This document is the working architecture baseline for the Cubid sprint.
 Keep it aligned with the SRS and the implementation handoff.
 
 ## System Map
@@ -49,7 +49,7 @@ app -> pages -> widgets -> features -> entities -> shared
 - `entities` own shared business nouns and types.
 - `shared` owns domain-neutral UI, API, hooks, config, and utilities.
 
-## BidArena Invariants
+## Cubid Invariants
 
 - Server state is authoritative.
 - Each auction gets serialized bid processing.
@@ -59,3 +59,50 @@ app -> pages -> widgets -> features -> entities -> shared
 - Payment amount and winner identity are derived from persisted state.
 - Reconnecting clients receive a full snapshot.
 - Chat and heat metrics never block bid processing.
+
+## Domain B Runtime
+
+Domain B is implemented around the `auction-engine` module and the realtime
+gateway.
+
+- `AuctionQueueService` serializes mutations per auction.
+- `AuctionEngineService` validates bid intent, assigns server sequences, writes
+  accepted bids before returning, and finalizes auctions idempotently.
+- `AuctionSnapshotService` builds reconnect-safe room snapshots with
+  `version`, `lastSequence`, recent bids, timeline, permissions, stats, and
+  payment status.
+- `AuctionTimerService` restores start/end timers on API boot and reconciles
+  overdue auctions from MongoDB state.
+- `AuctionRealtimeHandler` owns Socket.IO room join/resync/leave/bid events and
+  broadcasts only after authoritative state is ready.
+- Marketplace pages consume public `auction:marketplace:update` events to keep
+  list cards aligned with bid and lifecycle state without joining every room.
+- `ChatService` persists authenticated room messages outside the auction queue
+  so chat cannot delay bid mutations.
+
+Frontend Domain B code currently lives in reusable hooks and shared contracts:
+`useAuctionRoom` for room lifecycle/snapshots and `useBidIntent` for bid intent
+acks. The live auction room page composes snapshots, bid form state, recent
+bids, timeline, room metrics, payment state, and chat.
+
+## Domain A Runtime
+
+Domain A is implemented around REST APIs and RTK Query pages that surround the
+realtime engine.
+
+- `AuthService` creates JWT access tokens and HTTP-only refresh sessions whose
+  stored refresh tokens are hashed.
+- `UserService` exposes the current authenticated user without password hashes.
+- `AuctionService` creates auctions from the authenticated seller, records
+  `AUCTION_CREATED`, schedules Domain B timers, lists public auctions, returns
+  public detail DTOs, and lists owner auctions.
+- `PaymentService` lists winner payment records, creates gateway checkout
+  orders, verifies Razorpay/Stripe provider results on the server, processes
+  signed webhooks, and keeps mock checkout for local demos.
+- The web app restores sessions on boot, reconnects Socket.IO with the current
+  access token, guards protected routes, and uses RTK Query for marketplace
+  screens.
+
+REST detail/list data is public-safe marketplace data. Mutable live state,
+bid acceptance, timer completion, winner declaration, and room payment status
+remain server-authoritative through Domain B snapshots.

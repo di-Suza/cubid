@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import { requireAuth } from '../../shared/middleware/index.js';
+import { asyncHandler } from '../../shared/utils/asyncHandler.js';
 import { userController, type UserController } from './user.controller.js';
 
 export class UserRoute {
@@ -10,7 +12,7 @@ export class UserRoute {
   }
 
   private register(): void {
-    // User endpoints will be registered when profile/account flows are implemented.
+    this.router.get('/me', requireAuth, asyncHandler(this.controller.me));
   }
 }
 

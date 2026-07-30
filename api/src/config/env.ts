@@ -3,13 +3,19 @@ import { z } from 'zod';
 
 dotenv.config();
 
+const splitCsv = (value: string): string[] =>
+  value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+
 const envSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     PORT: z.coerce.number().int().positive().default(8081),
     MONGODB_URI: z.string().min(1).default('mongodb://localhost:27017/cubid'),
-    CORS_ORIGIN: z.string().min(1).default('http://localhost:5173'),
-    SOCKET_CORS_ORIGIN: z.string().min(1).default('http://localhost:5173'),
+    CORS_ORIGIN: z.string().min(1).default('http://localhost:5073,http://localhost:5173'),
+    SOCKET_CORS_ORIGIN: z.string().min(1).default('http://localhost:5073,http://localhost:5173'),
     JWT_ACCESS_SECRET: z.string().min(16).default('dev-access-secret-change-me'),
     JWT_REFRESH_SECRET: z.string().min(16).default('dev-refresh-secret-change-me'),
     COOKIE_SECRET: z.string().min(16).default('dev-cookie-secret-change-me'),
@@ -17,7 +23,13 @@ const envSchema = z
     REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(30),
     RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
     RATE_LIMIT_MAX: z.coerce.number().int().positive().default(300),
-    PAYMENT_GATEWAY: z.enum(['mock', 'razorpay', 'stripe']).default('mock')
+    PAYMENT_GATEWAY: z.enum(['mock', 'razorpay', 'stripe']).default('mock'),
+    RAZORPAY_KEY_ID: z.string().optional().default(''),
+    RAZORPAY_KEY_SECRET: z.string().optional().default(''),
+    RAZORPAY_WEBHOOK_SECRET: z.string().optional().default(''),
+    STRIPE_SECRET_KEY: z.string().optional().default(''),
+    STRIPE_WEBHOOK_SECRET: z.string().optional().default(''),
+    WEB_APP_URL: z.string().url().optional().default('http://localhost:5073')
   })
   .superRefine((value, ctx) => {
     if (value.NODE_ENV !== 'production') {
@@ -54,11 +66,27 @@ const envSchema = z
       });
     }
 
-    if (value.CORS_ORIGIN === '*') {
+    if (splitCsv(value.CORS_ORIGIN).includes('*')) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['CORS_ORIGIN'],
         message: 'Production CORS origin cannot be wildcard'
+      });
+    }
+
+    if (value.PAYMENT_GATEWAY === 'razorpay' && (!value.RAZORPAY_KEY_ID || !value.RAZORPAY_KEY_SECRET)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['RAZORPAY_KEY_ID'],
+        message: 'Production Razorpay gateway requires RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET'
+      });
+    }
+
+    if (value.PAYMENT_GATEWAY === 'stripe' && !value.STRIPE_SECRET_KEY) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['STRIPE_SECRET_KEY'],
+        message: 'Production Stripe gateway requires STRIPE_SECRET_KEY'
       });
     }
   });
@@ -71,8 +99,8 @@ export const env = Object.freeze({
   isTest: parsedEnv.NODE_ENV === 'test',
   port: parsedEnv.PORT,
   mongodbUri: parsedEnv.MONGODB_URI,
-  corsOrigin: parsedEnv.CORS_ORIGIN,
-  socketCorsOrigin: parsedEnv.SOCKET_CORS_ORIGIN,
+  corsOrigin: splitCsv(parsedEnv.CORS_ORIGIN),
+  socketCorsOrigin: splitCsv(parsedEnv.SOCKET_CORS_ORIGIN),
   jwtAccessSecret: parsedEnv.JWT_ACCESS_SECRET,
   jwtRefreshSecret: parsedEnv.JWT_REFRESH_SECRET,
   cookieSecret: parsedEnv.COOKIE_SECRET,
@@ -80,7 +108,13 @@ export const env = Object.freeze({
   refreshTokenTtlDays: parsedEnv.REFRESH_TOKEN_TTL_DAYS,
   rateLimitWindowMs: parsedEnv.RATE_LIMIT_WINDOW_MS,
   rateLimitMax: parsedEnv.RATE_LIMIT_MAX,
-  paymentGateway: parsedEnv.PAYMENT_GATEWAY
+  paymentGateway: parsedEnv.PAYMENT_GATEWAY,
+  razorpayKeyId: parsedEnv.RAZORPAY_KEY_ID,
+  razorpayKeySecret: parsedEnv.RAZORPAY_KEY_SECRET,
+  razorpayWebhookSecret: parsedEnv.RAZORPAY_WEBHOOK_SECRET,
+  stripeSecretKey: parsedEnv.STRIPE_SECRET_KEY,
+  stripeWebhookSecret: parsedEnv.STRIPE_WEBHOOK_SECRET,
+  webAppUrl: parsedEnv.WEB_APP_URL
 });
 
 export type AppEnv = typeof env;

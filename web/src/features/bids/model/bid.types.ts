@@ -1,1 +1,8 @@
-export type { Bid, BidIntent } from '../../../entities/bid';
+export type {
+  Bid,
+  BidAcceptedResult,
+  BidIntent,
+  BidRejectedResult,
+  BidRejectionCode,
+  PlaceBidResult
+} from '../../../entities/bid';
