@@ -15,6 +15,7 @@ Current executable gates:
 - Web TypeScript checks for realtime room hooks and live room composition
 - Web TypeScript checks for auth/session pages, marketplace pages, dashboard,
   payment UX, profile, route guards, and app shell
+- Optional E2E smoke runner for a running local API
 
 Planned gates:
 

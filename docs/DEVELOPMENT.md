@@ -50,6 +50,16 @@ Current Domain A REST/UI ownership:
 When adding Domain A behavior, keep REST endpoints as DTOs and keep live bid
 submission on Socket.IO through `useBidIntent`.
 
+## Demo Data
+
+Use `npm run seed:demo` after MongoDB is running to create deterministic demo
+accounts and auctions. The script creates active, upcoming, and completed
+auctions, accepted bids, timeline records, a winner result, and a pending mock
+payment without touching real payment providers.
+
+The smoke runner `npm run test:e2e:smoke` can be used after starting the API to
+exercise the public and protected marketplace REST path.
+
 ## Commit Style
 
 Use concise conventional commits:

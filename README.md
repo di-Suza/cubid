@@ -24,6 +24,8 @@ creating ad hoc folders.
 ```bash
 npm run dev:api
 npm run dev:web
+npm run seed:demo
+npm run test:e2e:smoke
 npm run check
 npm run test
 npm run verify
@@ -34,6 +36,19 @@ Local defaults:
 - API: `http://localhost:8081`
 - API base URL: `http://localhost:8081/api`
 - Web: `http://localhost:5173`
+
+Demo seed:
+
+- Start MongoDB first, for example `docker compose up -d mongo`.
+- Run `npm run seed:demo`.
+- Demo accounts use `Password123!`:
+  `seller@bidarena.demo`, `bidder@bidarena.demo`, and `rival@bidarena.demo`.
+
+E2E smoke:
+
+- With the API running, `npm run test:e2e:smoke` checks health, discovery,
+  registration, auction creation, and owner auction listing.
+- Without a reachable API, the smoke runner skips cleanly.
 
 ## Architecture Rule
 
