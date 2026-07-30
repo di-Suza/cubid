@@ -20,6 +20,49 @@ export class PaymentController {
     });
   };
 
+  createCheckoutOrder = async (req: Request, res: Response): Promise<void> => {
+    const checkout = await this.service.createCheckoutOrder(String(req.params.paymentId), {
+      userId: req.user?.id,
+      role: req.user?.role
+    });
+
+    res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      data: {
+        checkout
+      }
+    });
+  };
+
+  verifyCheckout = async (req: Request, res: Response): Promise<void> => {
+    const payment = await this.service.verifyCheckout(String(req.params.paymentId), req.body, {
+      userId: req.user?.id,
+      role: req.user?.role
+    });
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: {
+        payment
+      }
+    });
+  };
+
+  webhook = async (req: Request & { rawBody?: Buffer }, res: Response): Promise<void> => {
+    const payment = await this.service.handleWebhook({
+      signature: req.header('x-razorpay-signature') ?? req.header('stripe-signature') ?? undefined,
+      rawBody: req.rawBody ?? Buffer.from(JSON.stringify(req.body)),
+      body: req.body
+    });
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: {
+        payment
+      }
+    });
+  };
+
   mockCheckout = async (req: Request, res: Response): Promise<void> => {
     const payment = await this.service.completeMockCheckout(
       {

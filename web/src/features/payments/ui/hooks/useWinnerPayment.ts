@@ -1,11 +1,13 @@
-import { useMockCheckoutMutation } from '../../api/payment.api';
-import type { MockCheckoutPayload } from '../../model/payment.types';
+import { useCreateCheckoutOrderMutation, useVerifyCheckoutMutation } from '../../api/payment.api';
+import type { PaymentCheckoutOrder, VerifyPaymentPayload } from '../../model/payment.types';
 
 export const useWinnerPayment = () => {
-  const [mockCheckout, state] = useMockCheckoutMutation();
+  const [createCheckoutOrder, createState] = useCreateCheckoutOrderMutation();
+  const [verifyCheckout, verifyState] = useVerifyCheckoutMutation();
 
   return {
-    completePayment: (payload: MockCheckoutPayload) => mockCheckout(payload).unwrap(),
-    isProcessing: state.isLoading
+    createCheckoutOrder: (paymentId: string): Promise<PaymentCheckoutOrder> => createCheckoutOrder({ paymentId }).unwrap(),
+    isProcessing: createState.isLoading || verifyState.isLoading,
+    verifyCheckout: (payload: VerifyPaymentPayload) => verifyCheckout(payload).unwrap()
   };
 };

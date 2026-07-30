@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
 import { useAppSelector } from '../store/hooks';
+import logoUrl from '../../shared/assets/images/logo.png';
 import './ProductShell.css';
 
 export const PublicLayout = () => {
@@ -9,13 +10,22 @@ export const PublicLayout = () => {
   return (
     <main className="product-shell product-shell--public">
       <header className="product-nav">
-        <Link className="product-nav__brand" to="/">BidArena</Link>
+        <Link aria-label="Cubid home" className="product-nav__brand" to="/">
+          <img alt="Cubid" src={logoUrl} />
+        </Link>
         <nav aria-label="Primary">
-          <NavLink to="/auctions">Auctions</NavLink>
           {user ? (
-            <NavLink to="/dashboard">Dashboard</NavLink>
+            <>
+              <NavLink to="/dashboard">Dashboard</NavLink>
+              <NavLink to="/auctions">Auctions</NavLink>
+              <NavLink to="/create-auction">Create</NavLink>
+              <NavLink to="/my-auctions">My auctions</NavLink>
+              <NavLink to="/my-wins">My wins</NavLink>
+              <NavLink to="/profile">Profile</NavLink>
+            </>
           ) : (
             <>
+              <NavLink to="/auctions">Auctions</NavLink>
               <NavLink to="/sign-in">Sign in</NavLink>
               <NavLink to="/sign-up">Sign up</NavLink>
             </>

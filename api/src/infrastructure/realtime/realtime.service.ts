@@ -3,8 +3,9 @@ import { Server as SocketServer } from 'socket.io';
 
 import { env } from '../../config/env.js';
 import { logger } from '../../config/logger.js';
-import type { AuctionSnapshot } from '../../modules/auction-engine/index.js';
+import type { AuctionSnapshot, EngineAuctionRecord } from '../../modules/auction-engine/index.js';
 import { auctionRealtimeHandler, type AuctionRealtimeHandler } from './auctionRealtime.handler.js';
+import { toMarketplaceUpdateFromRecord, toMarketplaceUpdateFromSnapshot } from './auctionMarketplace.presenter.js';
 import { REALTIME_EVENTS } from './realtime.types.js';
 import { resolveSocketIdentity } from './socketAuth.js';
 
@@ -57,6 +58,22 @@ export class RealtimeService {
   broadcastAuctionEnded(snapshot: AuctionSnapshot): void {
     if (this.io) {
       this.auctionHandler.broadcastAuctionEnded(this.io, snapshot);
+    }
+  }
+
+  broadcastAuctionCreated(auction: EngineAuctionRecord): void {
+    if (this.io) {
+      this.io.emit(REALTIME_EVENTS.AUCTION_MARKETPLACE_UPDATE, toMarketplaceUpdateFromRecord(auction, 'CREATED', null));
+    }
+  }
+
+  broadcastAuctionState(snapshot: AuctionSnapshot): void {
+    if (this.io) {
+      this.io.to(`auction:${snapshot.auctionId}`).emit(REALTIME_EVENTS.AUCTION_STATE, snapshot);
+      this.io.emit(
+        REALTIME_EVENTS.AUCTION_MARKETPLACE_UPDATE,
+        toMarketplaceUpdateFromSnapshot(snapshot, 'UPDATED', snapshot.status)
+      );
     }
   }
 }

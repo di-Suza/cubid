@@ -49,7 +49,7 @@ const main = async () => {
   assert.equal(discovery.body.success, true);
   assert.ok(Array.isArray(discovery.body.data.items));
 
-  const email = `smoke-${Date.now()}@bidarena.test`;
+  const email = `smoke-${Date.now()}@cubid.test`;
   const register = await request('/auth/register', {
     method: 'POST',
     body: JSON.stringify({

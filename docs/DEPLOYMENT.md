@@ -15,6 +15,17 @@ Required environment values:
 - `JWT_ACCESS_SECRET`
 - `JWT_REFRESH_SECRET`
 - `COOKIE_SECRET`
+- `WEB_APP_URL`
+- `PAYMENT_GATEWAY`
+
+Provider-specific payment values:
+
+- Razorpay: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and
+  `RAZORPAY_WEBHOOK_SECRET`.
+- Stripe: `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
+
+Keep `PAYMENT_GATEWAY=mock` only for local demos or non-production test
+deployments.
 
 ## Web
 

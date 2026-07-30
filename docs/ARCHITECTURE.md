@@ -1,6 +1,6 @@
 # Cubid Architecture Guide
 
-This document is the working architecture baseline for the BidArena sprint.
+This document is the working architecture baseline for the Cubid sprint.
 Keep it aligned with the SRS and the implementation handoff.
 
 ## System Map
@@ -49,7 +49,7 @@ app -> pages -> widgets -> features -> entities -> shared
 - `entities` own shared business nouns and types.
 - `shared` owns domain-neutral UI, API, hooks, config, and utilities.
 
-## BidArena Invariants
+## Cubid Invariants
 
 - Server state is authoritative.
 - Each auction gets serialized bid processing.
@@ -75,6 +75,8 @@ gateway.
   overdue auctions from MongoDB state.
 - `AuctionRealtimeHandler` owns Socket.IO room join/resync/leave/bid events and
   broadcasts only after authoritative state is ready.
+- Marketplace pages consume public `auction:marketplace:update` events to keep
+  list cards aligned with bid and lifecycle state without joining every room.
 - `ChatService` persists authenticated room messages outside the auction queue
   so chat cannot delay bid mutations.
 
@@ -94,8 +96,9 @@ realtime engine.
 - `AuctionService` creates auctions from the authenticated seller, records
   `AUCTION_CREATED`, schedules Domain B timers, lists public auctions, returns
   public detail DTOs, and lists owner auctions.
-- `PaymentService` lists winner payment records and performs mock checkout
-  transitions only for the persisted winner.
+- `PaymentService` lists winner payment records, creates gateway checkout
+  orders, verifies Razorpay/Stripe provider results on the server, processes
+  signed webhooks, and keeps mock checkout for local demos.
 - The web app restores sessions on boot, reconnects Socket.IO with the current
   access token, guards protected routes, and uses RTK Query for marketplace
   screens.

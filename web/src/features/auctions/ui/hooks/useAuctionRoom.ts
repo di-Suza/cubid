@@ -55,10 +55,10 @@ export const useAuctionRoom = ({
     }
 
     let active = true;
-    const socket = socketClient.instance ?? socketClient.connect();
+    socketClient.connect();
 
     const joinRoom = async () => {
-      setStatus(socket.connected ? 'joining' : 'reconnecting');
+      setStatus(socketClient.instance?.connected ? 'joining' : 'reconnecting');
       setError(null);
 
       const response = await socketClient.emitWithAck<{ auctionId: string }, AuctionSnapshot>(
@@ -111,32 +111,32 @@ export const useAuctionRoom = ({
       }
     };
 
-    socket.on('connect', joinRoom);
-    socket.on('disconnect', handleDisconnect);
-    socket.on(SOCKET_EVENTS.AUCTION_SNAPSHOT, handleSnapshot);
-    socket.on(SOCKET_EVENTS.AUCTION_STATE, handleSnapshot);
-    socket.on(SOCKET_EVENTS.AUCTION_STARTED, handleSnapshot);
-    socket.on(SOCKET_EVENTS.AUCTION_ENDED, handleSnapshot);
-    socket.on(SOCKET_EVENTS.STATS_UPDATE, handleStatsUpdate);
-    socket.on(SOCKET_EVENTS.BID_ACCEPTED, handleBidAccepted);
-    socket.on(SOCKET_EVENTS.BID_REJECTED, handleBidRejected);
-    socket.on(SOCKET_EVENTS.ROOM_ERROR, handleRoomError);
+    socketClient.on('connect', joinRoom);
+    socketClient.on('disconnect', handleDisconnect);
+    socketClient.on<[AuctionSnapshot]>(SOCKET_EVENTS.AUCTION_SNAPSHOT, handleSnapshot);
+    socketClient.on<[AuctionSnapshot]>(SOCKET_EVENTS.AUCTION_STATE, handleSnapshot);
+    socketClient.on<[AuctionSnapshot]>(SOCKET_EVENTS.AUCTION_STARTED, handleSnapshot);
+    socketClient.on<[AuctionSnapshot]>(SOCKET_EVENTS.AUCTION_ENDED, handleSnapshot);
+    socketClient.on<[AuctionStats]>(SOCKET_EVENTS.STATS_UPDATE, handleStatsUpdate);
+    socketClient.on<[Bid]>(SOCKET_EVENTS.BID_ACCEPTED, handleBidAccepted);
+    socketClient.on<[PlaceBidResult]>(SOCKET_EVENTS.BID_REJECTED, handleBidRejected);
+    socketClient.on<[{ message?: string }]>(SOCKET_EVENTS.ROOM_ERROR, handleRoomError);
 
     void joinRoom();
 
     return () => {
       active = false;
-      socket.emit(SOCKET_EVENTS.AUCTION_LEAVE, { auctionId });
-      socket.off('connect', joinRoom);
-      socket.off('disconnect', handleDisconnect);
-      socket.off(SOCKET_EVENTS.AUCTION_SNAPSHOT, handleSnapshot);
-      socket.off(SOCKET_EVENTS.AUCTION_STATE, handleSnapshot);
-      socket.off(SOCKET_EVENTS.AUCTION_STARTED, handleSnapshot);
-      socket.off(SOCKET_EVENTS.AUCTION_ENDED, handleSnapshot);
-      socket.off(SOCKET_EVENTS.STATS_UPDATE, handleStatsUpdate);
-      socket.off(SOCKET_EVENTS.BID_ACCEPTED, handleBidAccepted);
-      socket.off(SOCKET_EVENTS.BID_REJECTED, handleBidRejected);
-      socket.off(SOCKET_EVENTS.ROOM_ERROR, handleRoomError);
+      socketClient.instance?.emit(SOCKET_EVENTS.AUCTION_LEAVE, { auctionId });
+      socketClient.off('connect', joinRoom);
+      socketClient.off('disconnect', handleDisconnect);
+      socketClient.off<[AuctionSnapshot]>(SOCKET_EVENTS.AUCTION_SNAPSHOT, handleSnapshot);
+      socketClient.off<[AuctionSnapshot]>(SOCKET_EVENTS.AUCTION_STATE, handleSnapshot);
+      socketClient.off<[AuctionSnapshot]>(SOCKET_EVENTS.AUCTION_STARTED, handleSnapshot);
+      socketClient.off<[AuctionSnapshot]>(SOCKET_EVENTS.AUCTION_ENDED, handleSnapshot);
+      socketClient.off<[AuctionStats]>(SOCKET_EVENTS.STATS_UPDATE, handleStatsUpdate);
+      socketClient.off<[Bid]>(SOCKET_EVENTS.BID_ACCEPTED, handleBidAccepted);
+      socketClient.off<[PlaceBidResult]>(SOCKET_EVENTS.BID_REJECTED, handleBidRejected);
+      socketClient.off<[{ message?: string }]>(SOCKET_EVENTS.ROOM_ERROR, handleRoomError);
     };
   }, [applySnapshot, auctionId, enabled, onBidAccepted, onBidRejected]);
 

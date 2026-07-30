@@ -1,6 +1,6 @@
 # End-To-End Tests
 
-E2E tests are planned after the first stable BidArena user journey exists.
+E2E tests are planned after the first stable Cubid user journey exists.
 
 Priority journeys:
 

@@ -13,11 +13,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  border: 1px solid #d9e1ea;
+  border: 1px solid var(--color-line);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--color-surface);
   padding: 12px;
-  box-shadow: 0 18px 50px rgba(23, 33, 43, 0.14);
+  box-shadow: var(--shadow-card);
 }
 
 .toast--success {
@@ -29,5 +29,5 @@
 }
 
 .toast--info {
-  border-color: #1167b1;
+  border-color: var(--color-teal);
 }

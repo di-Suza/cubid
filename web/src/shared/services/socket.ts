@@ -25,6 +25,7 @@ export const SOCKET_EVENTS = {
   AUCTION_STATE: 'auction:state',
   AUCTION_STARTED: 'auction:started',
   AUCTION_ENDED: 'auction:ended',
+  AUCTION_MARKETPLACE_UPDATE: 'auction:marketplace:update',
   BID_PLACE: 'bid:place',
   BID_ACCEPTED: 'bid:accepted',
   BID_REJECTED: 'bid:rejected',
@@ -34,11 +35,14 @@ export const SOCKET_EVENTS = {
   ROOM_ERROR: 'room:error'
 } as const;
 
+type SocketEventHandler = (...args: unknown[]) => void;
+
 export class SocketClient {
   private socket?: Socket;
+  private readonly listeners = new Map<string, Set<SocketEventHandler>>();
 
   connect(token?: string): Socket {
-    if (this.socket?.connected) {
+    if (this.socket) {
       return this.socket;
     }
 
@@ -48,7 +52,20 @@ export class SocketClient {
       auth: token ? { token } : undefined
     });
 
+    this.attachRegisteredListeners(this.socket);
     return this.socket;
+  }
+
+  on<TArgs extends unknown[]>(eventName: string, handler: (...args: TArgs) => void): void {
+    const registered = this.listeners.get(eventName) ?? new Set<SocketEventHandler>();
+    registered.add(handler as SocketEventHandler);
+    this.listeners.set(eventName, registered);
+    this.socket?.on(eventName, handler as SocketEventHandler);
+  }
+
+  off<TArgs extends unknown[]>(eventName: string, handler: (...args: TArgs) => void): void {
+    this.listeners.get(eventName)?.delete(handler as SocketEventHandler);
+    this.socket?.off(eventName, handler as SocketEventHandler);
   }
 
   async emitWithAck<TPayload, TResponse>(
@@ -89,12 +106,29 @@ export class SocketClient {
   }
 
   disconnect(): void {
-    this.socket?.disconnect();
+    if (this.socket) {
+      for (const [eventName, handlers] of this.listeners) {
+        for (const handler of handlers) {
+          this.socket.off(eventName, handler);
+        }
+      }
+
+      this.socket.disconnect();
+    }
+
     this.socket = undefined;
   }
 
   get instance(): Socket | undefined {
     return this.socket;
+  }
+
+  private attachRegisteredListeners(socket: Socket): void {
+    for (const [eventName, handlers] of this.listeners) {
+      for (const handler of handlers) {
+        socket.on(eventName, handler);
+      }
+    }
   }
 }
 

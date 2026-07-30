@@ -7,6 +7,8 @@ Current executable gates:
 
 - API auth/session service rules
 - API auction creation, discovery, owner query, and winner payment rules
+- API image upload validation for auction creation
+- API gateway payment order/verification rules
 - API auction queue serialization
 - API bid validation, ordering, duplicate request handling, and finalization
 - API room presence accounting
@@ -20,7 +22,7 @@ Current executable gates:
 Planned gates:
 
 - Additional API validators and route/controller behavior
-- Payment idempotency
+- More payment webhook idempotency edge cases
 - Socket transport tests with a real Socket.IO server
 - Frontend helpers, hooks, RTK Query cache behavior, and page smoke tests
 - End-to-end demo flows after selectors and seed data are stable

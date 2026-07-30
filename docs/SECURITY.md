@@ -17,6 +17,11 @@ Security rules are part of the architecture, not optional polish.
   error handling.
 - Redact secrets, cookies, tokens, passwords, and OTPs from logs.
 - Verify payment gateway callbacks on the server.
+- Use provider order/session IDs stored in MongoDB for payment verification;
+  never accept winner IDs, auction IDs, or payable amounts from the browser.
+- Keep Razorpay/Stripe secrets only in API environment variables. The browser
+  receives only checkout-safe values such as Razorpay key id or Stripe checkout
+  URL.
 
 ## Current Audit Note
 

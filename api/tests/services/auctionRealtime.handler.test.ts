@@ -90,6 +90,11 @@ class FakeSocket {
 class FakeIo {
   readonly emitted: Array<{ room: string; event: string; payload: unknown }> = [];
 
+  emit(event: string, payload: unknown) {
+    this.emitted.push({ room: '*', event, payload });
+    return true;
+  }
+
   to(room: string) {
     return {
       emit: (event: string, payload: unknown) => {
@@ -229,7 +234,7 @@ describe('AuctionRealtimeHandler', () => {
     });
     assert.deepEqual(
       io.emitted.map((entry) => entry.event),
-      [REALTIME_EVENTS.BID_ACCEPTED, REALTIME_EVENTS.AUCTION_STATE]
+      [REALTIME_EVENTS.BID_ACCEPTED, REALTIME_EVENTS.AUCTION_STATE, REALTIME_EVENTS.AUCTION_MARKETPLACE_UPDATE]
     );
   });
 
@@ -248,7 +253,7 @@ describe('AuctionRealtimeHandler', () => {
     assert.equal(engine.finalizeCalls, 1);
     assert.deepEqual(
       io.emitted.map((entry) => entry.event),
-      [REALTIME_EVENTS.AUCTION_ENDED, REALTIME_EVENTS.AUCTION_STATE]
+      [REALTIME_EVENTS.AUCTION_ENDED, REALTIME_EVENTS.AUCTION_STATE, REALTIME_EVENTS.AUCTION_MARKETPLACE_UPDATE]
     );
   });
 

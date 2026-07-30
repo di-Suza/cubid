@@ -196,6 +196,8 @@ class FakePaymentRepository implements AuctionEnginePaymentRepository {
       amountMinor: input.amountMinor,
       currency: input.currency,
       gateway: 'mock',
+      gatewayOrderId: null,
+      gatewayPaymentId: null,
       status: 'PENDING',
       verifiedAt: null
     };

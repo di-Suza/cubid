@@ -1,0 +1,1 @@
+const g=(t,e="Something went wrong")=>{var s;if(t instanceof Error)return t.message;if(typeof t=="string")return t;if(typeof t=="object"&&t&&"data"in t){const n=t.data;return((s=n==null?void 0:n.error)==null?void 0:s.message)??e}return e};export{g};

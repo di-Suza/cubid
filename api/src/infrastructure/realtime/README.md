@@ -12,6 +12,7 @@ Auction and bidding events are active through `AuctionRealtimeHandler`.
 | `bid:place` | client -> server | Submit bid intent `{ auctionId, amountMinor, requestId }`. |
 | `auction:snapshot` | server -> client | Full authoritative room state for joins and resync. |
 | `auction:state` | server -> room | Authoritative state after accepted bid or lifecycle change. |
+| `auction:marketplace:update` | server -> clients | Public-safe auction summary update for live marketplace lists. |
 | `bid:accepted` | server -> room | Accepted bid after durable persistence. |
 | `bid:rejected` | server -> client | Rejected bid intent with stable machine code. |
 | `chat:send` | client -> server | Persist authenticated room chat outside the bid queue. |
