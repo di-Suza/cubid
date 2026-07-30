@@ -56,6 +56,21 @@ export class AuctionController {
     });
   };
 
+  myAuctions = async (req: Request, res: Response): Promise<void> => {
+    const result = await this.service.listMyAuctions(req.query, {
+      userId: req.user?.id,
+      role: req.user?.role
+    });
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: {
+        items: result.items.map(toAuctionDto),
+        meta: result.meta
+      }
+    });
+  };
+
   detail = async (req: Request, res: Response): Promise<void> => {
     const auction = await this.service.getAuctionDetail(String(req.params.auctionId));
 

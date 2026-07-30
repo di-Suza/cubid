@@ -68,6 +68,10 @@ export class AuctionRepository {
       filter.status = query.status;
     }
 
+    if (query.sellerId) {
+      filter.sellerId = query.sellerId;
+    }
+
     if (query.search) {
       filter.$text = {
         $search: query.search

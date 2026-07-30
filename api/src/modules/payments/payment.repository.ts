@@ -1,8 +1,10 @@
 import { env } from '../../config/env.js';
 import type { EnginePaymentRecord } from '../auction-engine/auctionEngine.types.js';
+import type { WinnerPaymentRecord } from './payment.service.js';
 import { PaymentModel, type PaymentDocument } from './payment.model.js';
 
 type LeanPayment = Record<string, any>;
+type LeanAuction = Record<string, any>;
 
 const toDateOrNull = (value: unknown): Date | null => {
   if (!value) {
@@ -57,6 +59,54 @@ export class PaymentRepository {
     return payment ? this.toEngineRecord(payment as LeanPayment) : null;
   }
 
+  async listWinsForUser(userId: string): Promise<WinnerPaymentRecord[]> {
+    const payments = await this.paymentModel
+      .find({ winnerId: userId })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: 'auctionId',
+        select: 'title imageUrl currency currentHighestBidMinor status endAt sellerId',
+        populate: {
+          path: 'sellerId',
+          select: 'name'
+        }
+      })
+      .lean();
+
+    return payments
+      .map((payment) => this.toWinnerPaymentRecord(payment as LeanPayment))
+      .filter((record): record is WinnerPaymentRecord => Boolean(record));
+  }
+
+  async findById(paymentId: string): Promise<EnginePaymentRecord | null> {
+    const payment = await this.paymentModel.findById(paymentId).lean();
+
+    return payment ? this.toEngineRecord(payment as LeanPayment) : null;
+  }
+
+  async updateStatus(input: {
+    paymentId: string;
+    status: 'SUCCESSFUL' | 'FAILED';
+    gatewayPaymentId: string | null;
+    verifiedAt: Date | null;
+  }): Promise<EnginePaymentRecord> {
+    const payment = await this.paymentModel
+      .findByIdAndUpdate(
+        input.paymentId,
+        {
+          $set: {
+            status: input.status,
+            gatewayPaymentId: input.gatewayPaymentId,
+            verifiedAt: input.verifiedAt
+          }
+        },
+        { new: true }
+      )
+      .lean();
+
+    return this.toEngineRecord(payment as LeanPayment);
+  }
+
   private toEngineRecord(payment: LeanPayment): EnginePaymentRecord {
     return {
       id: String(payment._id),
@@ -67,6 +117,49 @@ export class PaymentRepository {
       gateway: payment.gateway,
       status: payment.status,
       verifiedAt: toDateOrNull(payment.verifiedAt)
+    };
+  }
+
+  private toWinnerPaymentRecord(payment: LeanPayment): WinnerPaymentRecord | null {
+    const auction = payment.auctionId;
+
+    if (!auction || typeof auction !== 'object' || !('_id' in auction)) {
+      return null;
+    }
+
+    const auctionRecord = auction as LeanAuction;
+    const seller = this.toPublicUser(auctionRecord.sellerId, 'Seller');
+
+    return {
+      payment: this.toEngineRecord({
+        ...payment,
+        auctionId: auctionRecord._id
+      }),
+      auction: {
+        id: String(auctionRecord._id),
+        title: String(auctionRecord.title),
+        imageUrl: String(auctionRecord.imageUrl),
+        currency: String(auctionRecord.currency),
+        winningAmountMinor: Number(payment.amountMinor),
+        status: auctionRecord.status,
+        endAt: toDateOrNull(auctionRecord.endAt)?.toISOString() ?? new Date().toISOString(),
+        seller
+      }
+    };
+  }
+
+  private toPublicUser(value: unknown, fallbackName: string) {
+    if (value && typeof value === 'object' && '_id' in value) {
+      const record = value as { _id: unknown; name?: unknown };
+      return {
+        id: String(record._id),
+        name: typeof record.name === 'string' ? record.name : fallbackName
+      };
+    }
+
+    return {
+      id: String(value),
+      name: fallbackName
     };
   }
 }

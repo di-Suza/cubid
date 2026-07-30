@@ -53,6 +53,7 @@ export interface ListAuctionsQuery {
   limit: number;
   status?: AuctionStatus;
   search?: string;
+  sellerId?: string;
 }
 
 export interface AuctionListResult {
@@ -210,6 +211,28 @@ export class AuctionService {
     }
 
     return auction;
+  }
+
+  async listMyAuctions(input: ListAuctionsInput = {}, actor: AuctionEngineActor): Promise<AuctionListResult> {
+    if (!actor.userId) {
+      throw new UnauthorizedError('Authentication required to view your auctions');
+    }
+
+    const query = {
+      ...this.normalizeListQuery(input),
+      sellerId: actor.userId
+    };
+    const result = await this.auctions.listAuctions(query);
+
+    return {
+      items: result.items,
+      meta: {
+        page: query.page,
+        limit: query.limit,
+        total: result.total,
+        hasNextPage: query.page * query.limit < result.total
+      }
+    };
   }
 
   private normalizeListQuery(input: ListAuctionsInput): ListAuctionsQuery {

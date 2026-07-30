@@ -20,6 +20,13 @@ export class AuctionRoute {
     this.router.get('/', listAuctionValidators, validateRequest, asyncHandler(this.controller.list));
     this.router.post('/', requireAuth, createAuctionValidators, validateRequest, asyncHandler(this.controller.create));
     this.router.get(
+      '/me',
+      requireAuth,
+      listAuctionValidators,
+      validateRequest,
+      asyncHandler(this.controller.myAuctions)
+    );
+    this.router.get(
       '/:auctionId',
       auctionDetailValidators,
       validateRequest,
