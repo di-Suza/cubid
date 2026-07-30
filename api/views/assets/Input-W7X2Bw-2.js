@@ -1,0 +1,1 @@
+import{j as n,i as e}from"./index-DnER2C_7.js";const m=({className:a,id:u,label:t,error:s,...i})=>{const l=u??i.name;return n.jsxs("label",{className:"input-field",htmlFor:l,children:[t?n.jsx("span",{children:t}):null,n.jsx("input",{id:l,className:e("input",s&&"input--error",a),...i}),s?n.jsx("small",{children:s}):null]})};export{m as I};

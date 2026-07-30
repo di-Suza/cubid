@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from 'react';
-import { Gavel, LogIn, RefreshCw, ShieldCheck, Wifi, WifiOff } from 'lucide-react';
+import { CreditCard, Gavel, LogIn, RefreshCw, ShieldCheck, Wifi, WifiOff } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { useBidIntent } from '../../../bids';
@@ -40,7 +40,7 @@ export const AuctionRoomPage = () => {
   const [bidAmount, setBidAmount] = useState('');
   const detailQuery = useGetAuctionDetailQuery(auctionId ?? '', { skip: !auctionId });
   const { connected, error, lastRejection, resync, snapshot, status } = useAuctionRoom({ auctionId });
-  const chat = useAuctionChat({ auctionId, enabled: Boolean(snapshot?.permissions.canChat) });
+  const chat = useAuctionChat({ auctionId, enabled: Boolean(auctionId) });
   const bidIntent = useBidIntent({
     auctionId,
     disabled: !snapshot?.permissions.canBid,
@@ -60,13 +60,39 @@ export const AuctionRoomPage = () => {
   const roomStatus = snapshot?.status ?? detail?.status ?? status;
   const currentBidMinor = snapshot?.currentHighestBidMinor ?? detail?.currentHighestBidMinor ?? 0;
   const minimumNextBidMinor = snapshot?.minimumNextBidMinor ?? detail?.startingBidMinor ?? 0;
-  const modeMessage = !currentUser
-    ? 'Guests can watch this room live. Sign in to bid or send chat.'
-    : snapshot?.permissions.isOwner
-      ? 'Owner view is read-only for bidding, so the auction engine can prevent self-bids.'
-      : snapshot && !snapshot.permissions.canBid
-        ? 'Bidding is closed or not available for this room state.'
-        : null;
+  const roomNotice = (() => {
+    if (!currentUser) {
+      return {
+        message: 'Guests can watch this room live. Sign in to bid or send chat.',
+        cta: { icon: <LogIn size={16} />, label: 'Sign in', to: '/sign-in' }
+      };
+    }
+
+    if (snapshot?.permissions.canPay) {
+      return {
+        message: 'You won this auction. Complete payment to lock the purchase.',
+        cta: { icon: <CreditCard size={16} />, label: 'Pay winning bid', to: '/my-wins' }
+      };
+    }
+
+    if (snapshot?.permissions.isWinner && snapshot.paymentStatus === 'SUCCESSFUL') {
+      return { message: 'You won this auction and payment is complete.' };
+    }
+
+    if (snapshot?.status === 'COMPLETED' && snapshot.highestBidder) {
+      return { message: `Auction completed. Winner: ${snapshot.highestBidder.name}.` };
+    }
+
+    if (snapshot?.permissions.isOwner) {
+      return { message: 'Owner view is read-only for bidding, so the auction engine can prevent self-bids.' };
+    }
+
+    if (snapshot && !snapshot.permissions.canBid) {
+      return { message: 'Bidding is closed or not available for this room state.' };
+    }
+
+    return null;
+  })();
 
   const handleBidSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -112,13 +138,13 @@ export const AuctionRoomPage = () => {
       {detailQuery.error && !snapshot ? (
         <p className="auction-room-alert">{getErrorMessage(detailQuery.error, 'Unable to load auction detail')}</p>
       ) : null}
-      {modeMessage ? (
+      {roomNotice ? (
         <div className="auction-room-mode">
-          <span>{modeMessage}</span>
-          {!currentUser ? (
-            <Link to="/sign-in">
-              <LogIn size={16} />
-              Sign in
+          <span>{roomNotice.message}</span>
+          {roomNotice.cta ? (
+            <Link to={roomNotice.cta.to}>
+              {roomNotice.cta.icon}
+              {roomNotice.cta.label}
             </Link>
           ) : null}
         </div>

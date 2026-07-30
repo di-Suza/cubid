@@ -7,8 +7,8 @@ Initial status:
 - REST is the default HTTP API style.
 - Socket.IO event names are documented in the realtime infrastructure.
 - Domain B socket payloads are implemented for auction join/resync/leave,
-  bid intent, snapshots, accepted/rejected bids, stats, chat messages, and
-  lifecycle events.
+  bid intent, snapshots, accepted/rejected bids, stats, chat messages,
+  marketplace list updates, and lifecycle events.
 - OpenAPI can be added under `contracts/openapi` as endpoints become real.
 
 Contract rules:
@@ -31,13 +31,19 @@ Auth:
 Auctions:
 
 - `GET /api/auctions?page&limit&status&search` -> `{ items, meta }`.
-- `POST /api/auctions` -> `{ auction }`; seller is derived from auth.
+- `POST /api/auctions` with `imageDataUrl` upload or `imageUrl` fallback ->
+  `{ auction }`; seller is derived from auth.
 - `GET /api/auctions/me?page&limit&status` -> authenticated owner auctions.
 - `GET /api/auctions/:auctionId` -> public-safe auction detail.
 
 Payments:
 
 - `GET /api/payments/me/wins` -> winner payment records with auction summary.
+- `POST /api/payments/:paymentId/order` -> provider checkout order/session
+  derived from persisted winner payment.
+- `POST /api/payments/:paymentId/verify` -> server-side checkout verification.
+- `POST /api/payments/webhook` -> provider callback with server signature
+  verification.
 - `POST /api/payments/:paymentId/mock-checkout` with
   `{ outcome: "SUCCESSFUL" | "FAILED" }` -> persisted payment status.
 

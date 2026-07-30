@@ -19,7 +19,7 @@ export const useAuctionChat = ({ auctionId, enabled = true }: UseAuctionChatOpti
       return;
     }
 
-    const socket = socketClient.instance ?? socketClient.connect();
+    socketClient.connect();
 
     const handleMessage = (message: ChatMessage) => {
       if (message.auctionId !== auctionId) {
@@ -35,10 +35,10 @@ export const useAuctionChat = ({ auctionId, enabled = true }: UseAuctionChatOpti
       });
     };
 
-    socket.on(SOCKET_EVENTS.CHAT_MESSAGE, handleMessage);
+    socketClient.on<[ChatMessage]>(SOCKET_EVENTS.CHAT_MESSAGE, handleMessage);
 
     return () => {
-      socket.off(SOCKET_EVENTS.CHAT_MESSAGE, handleMessage);
+      socketClient.off<[ChatMessage]>(SOCKET_EVENTS.CHAT_MESSAGE, handleMessage);
     };
   }, [auctionId, enabled]);
 

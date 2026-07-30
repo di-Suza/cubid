@@ -84,6 +84,34 @@ export class PaymentRepository {
     return payment ? this.toEngineRecord(payment as LeanPayment) : null;
   }
 
+  async findByGatewayOrderId(gatewayOrderId: string): Promise<EnginePaymentRecord | null> {
+    const payment = await this.paymentModel.findOne({ gatewayOrderId }).lean();
+
+    return payment ? this.toEngineRecord(payment as LeanPayment) : null;
+  }
+
+  async setGatewayOrder(input: {
+    paymentId: string;
+    gateway: 'mock' | 'razorpay' | 'stripe';
+    gatewayOrderId: string;
+  }): Promise<EnginePaymentRecord> {
+    const payment = await this.paymentModel
+      .findByIdAndUpdate(
+        input.paymentId,
+        {
+          $set: {
+            gateway: input.gateway,
+            gatewayOrderId: input.gatewayOrderId,
+            status: 'PENDING'
+          }
+        },
+        { new: true }
+      )
+      .lean();
+
+    return this.toEngineRecord(payment as LeanPayment);
+  }
+
   async updateStatus(input: {
     paymentId: string;
     status: 'SUCCESSFUL' | 'FAILED';
@@ -115,6 +143,8 @@ export class PaymentRepository {
       amountMinor: Number(payment.amountMinor),
       currency: String(payment.currency),
       gateway: payment.gateway,
+      gatewayOrderId: payment.gatewayOrderId ? String(payment.gatewayOrderId) : null,
+      gatewayPaymentId: payment.gatewayPaymentId ? String(payment.gatewayPaymentId) : null,
       status: payment.status,
       verifiedAt: toDateOrNull(payment.verifiedAt)
     };

@@ -104,7 +104,7 @@ const auctionSchema = new Schema(
 );
 
 auctionSchema.index({ status: 1, startAt: 1, endAt: 1 });
-auctionSchema.index({ sellerId: 1, status: 1, createdAt: -1 });
+auctionSchema.index({ sellerId: 1, status: 1, updatedAt: -1 });
 auctionSchema.index({ title: 'text', description: 'text' });
 
 export type AuctionDocument = InferSchemaType<typeof auctionSchema> & {

@@ -42,7 +42,7 @@ export const MyAuctionsPage = () => {
       </header>
 
       <div className="market-toolbar market-toolbar--single">
-        <div className="segmented-control" aria-label="My auction status filter">
+        <div className="segmented-control segmented-control--filters" aria-label="My auction status filter">
           {statusOptions.map((option) => (
             <button
               aria-pressed={status === option.value}

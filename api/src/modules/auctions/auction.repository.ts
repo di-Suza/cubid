@@ -82,7 +82,7 @@ export class AuctionRepository {
     const [auctions, total] = await Promise.all([
       this.auctionModel
         .find(filter)
-        .sort({ createdAt: -1 })
+        .sort({ updatedAt: -1, createdAt: -1 })
         .skip(skip)
         .limit(query.limit)
         .populate('sellerId', 'name')

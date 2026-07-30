@@ -1,31 +1,31 @@
 .input-field {
   display: grid;
   gap: 6px;
-  color: #33485f;
+  color: var(--color-muted);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .input {
   min-height: 42px;
-  border: 1px solid #c8d4e2;
+  border: 1px solid var(--color-line);
   border-radius: 8px;
   padding: 0 12px;
-  background: #ffffff;
-  color: #17212b;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-ink);
   font: inherit;
 }
 
 .input:focus {
-  border-color: #1167b1;
-  outline: 3px solid rgba(17, 103, 177, 0.16);
+  border-color: var(--color-coral);
+  outline: 3px solid rgba(var(--color-accent-rgb), 0.16);
 }
 
 .input--error {
-  border-color: #b42318;
+  border-color: var(--color-danger);
 }
 
 .input-field small {
-  color: #b42318;
+  color: var(--color-danger);
   font-weight: 600;
 }

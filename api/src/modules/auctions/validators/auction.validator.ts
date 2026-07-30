@@ -12,7 +12,19 @@ import {
 export const createAuctionValidators = [
   requiredStringBody('title', 140),
   requiredStringBody('description', 5000),
-  body('imageUrl').isURL({ require_protocol: true }).withMessage('imageUrl must be a URL'),
+  body('imageUrl').optional().isURL({ require_protocol: true }).withMessage('imageUrl must be a URL'),
+  body('imageDataUrl')
+    .optional()
+    .isString()
+    .isLength({ max: 2_500_000 })
+    .withMessage('imageDataUrl is too large'),
+  body().custom((value) => {
+    if (value.imageUrl || value.imageDataUrl) {
+      return true;
+    }
+
+    throw new Error('imageUrl or imageDataUrl is required');
+  }),
   body('currency').optional().isLength({ min: 3, max: 3 }).withMessage('currency must be a three-letter code'),
   nonNegativeIntegerBody('startingBidMinor'),
   positiveIntegerBody('minimumIncrementMinor'),

@@ -153,6 +153,23 @@ describe('AuctionService', () => {
     assert.equal(scheduler.scheduled[0]?.id, result.id);
   });
 
+  it('accepts an uploaded image data URL instead of a remote image link', async () => {
+    const { auctions, service } = createHarness();
+    const imageDataUrl = 'data:image/png;base64,aGVsbG8=';
+
+    const result = await service.createAuction(
+      {
+        ...validInput,
+        imageUrl: undefined,
+        imageDataUrl
+      },
+      { userId: seller.id }
+    );
+
+    assert.equal(result.imageUrl, imageDataUrl);
+    assert.equal(auctions.created?.imageUrl, imageDataUrl);
+  });
+
   it('rejects unauthenticated auction creation', async () => {
     const { service } = createHarness();
 

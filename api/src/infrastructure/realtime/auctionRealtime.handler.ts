@@ -11,6 +11,7 @@ import {
 import { logger } from '../../config/logger.js';
 import { AppError } from '../../shared/errors/AppError.js';
 import { auctionPresenceService, type AuctionPresenceService } from './auctionPresence.service.js';
+import { toMarketplaceUpdateFromSnapshot } from './auctionMarketplace.presenter.js';
 import { REALTIME_EVENTS } from './realtime.types.js';
 
 type AckCallback<T> = (response: { success: true; data: T } | { success: false; error: { code: string; message: string } }) => void;
@@ -66,11 +67,13 @@ export class AuctionRealtimeHandler {
   broadcastAuctionStarted(io: SocketServer, snapshot: AuctionSnapshot): void {
     io.to(this.roomName(snapshot.auctionId)).emit(REALTIME_EVENTS.AUCTION_STARTED, snapshot);
     io.to(this.roomName(snapshot.auctionId)).emit(REALTIME_EVENTS.AUCTION_STATE, snapshot);
+    io.emit(REALTIME_EVENTS.AUCTION_MARKETPLACE_UPDATE, toMarketplaceUpdateFromSnapshot(snapshot, 'STARTED', 'UPCOMING'));
   }
 
   broadcastAuctionEnded(io: SocketServer, snapshot: AuctionSnapshot): void {
     io.to(this.roomName(snapshot.auctionId)).emit(REALTIME_EVENTS.AUCTION_ENDED, snapshot);
     io.to(this.roomName(snapshot.auctionId)).emit(REALTIME_EVENTS.AUCTION_STATE, snapshot);
+    io.emit(REALTIME_EVENTS.AUCTION_MARKETPLACE_UPDATE, toMarketplaceUpdateFromSnapshot(snapshot, 'ENDED', 'ACTIVE'));
   }
 
   private async handleJoin(
@@ -169,6 +172,10 @@ export class AuctionRealtimeHandler {
       if (result.ok) {
         io.to(this.roomName(auctionId)).emit(REALTIME_EVENTS.BID_ACCEPTED, result.bid);
         io.to(this.roomName(auctionId)).emit(REALTIME_EVENTS.AUCTION_STATE, result.snapshot);
+        io.emit(
+          REALTIME_EVENTS.AUCTION_MARKETPLACE_UPDATE,
+          toMarketplaceUpdateFromSnapshot(result.snapshot, 'UPDATED', result.snapshot.status)
+        );
         return;
       }
 

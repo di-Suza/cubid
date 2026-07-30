@@ -1,22 +1,13 @@
-import { Link, Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAppSelector } from '../store/hooks';
 import { FullPageLoader } from '../../shared/components/FullPageLoader/FullPageLoader';
-import { useLogoutMutation } from '../../features/auth';
-import { Button } from '../../shared/ui';
+import logoUrl from '../../shared/assets/images/logo.png';
 import './ProductShell.css';
 
 export const ProtectedLayout = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { bootstrapped, user } = useAppSelector((state) => state.auth);
-  const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
-
-  const handleLogout = async () => {
-    await logout().unwrap().catch(() => undefined);
-    navigate('/', { replace: true });
-  };
 
   if (!bootstrapped) {
     return <FullPageLoader />;
@@ -29,7 +20,9 @@ export const ProtectedLayout = () => {
   return (
     <main className="product-shell product-shell--protected">
       <header className="product-nav">
-        <Link className="product-nav__brand" to="/dashboard">BidArena</Link>
+        <Link aria-label="Cubid dashboard" className="product-nav__brand" to="/dashboard">
+          <img alt="Cubid" src={logoUrl} />
+        </Link>
         <nav aria-label="Primary">
           <NavLink to="/dashboard">Dashboard</NavLink>
           <NavLink to="/auctions">Auctions</NavLink>
@@ -38,9 +31,6 @@ export const ProtectedLayout = () => {
           <NavLink to="/my-wins">My wins</NavLink>
           <NavLink to="/profile">Profile</NavLink>
         </nav>
-        <Button disabled={isLoggingOut} icon={<LogOut size={16} />} onClick={() => void handleLogout()} variant="secondary">
-          Sign out
-        </Button>
       </header>
       <div className="product-shell__content">
         <Outlet />

@@ -66,6 +66,8 @@ export interface EnginePaymentRecord {
   amountMinor: number;
   currency: string;
   gateway: PaymentGateway;
+  gatewayOrderId: string | null;
+  gatewayPaymentId: string | null;
   status: PaymentStatus;
   verifiedAt: Date | null;
 }

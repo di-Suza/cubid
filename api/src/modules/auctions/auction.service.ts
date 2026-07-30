@@ -16,11 +16,14 @@ import { auctionRepository, type AuctionRepository } from './auction.repository.
 
 const MIN_DURATION_SECONDS = 10;
 const MAX_DURATION_SECONDS = 7 * 24 * 60 * 60;
+const MAX_IMAGE_DATA_URL_BYTES = 2_500_000;
+const IMAGE_DATA_URL_PATTERN = /^data:image\/(png|jpeg|jpg|webp);base64,[a-z0-9+/=\s]+$/i;
 
 export interface CreateAuctionInput {
   title: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
+  imageDataUrl?: string;
   currency?: string;
   startingBidMinor: number;
   minimumIncrementMinor: number;
@@ -141,17 +144,11 @@ export class AuctionService {
 
     const title = input.title.trim();
     const description = input.description.trim();
-    const imageUrl = input.imageUrl.trim();
+    const imageUrl = this.normalizeImage(input);
     const currency = (input.currency ?? DEFAULT_CURRENCY).trim().toUpperCase();
 
     if (!title || !description) {
       throw new BadRequestError('title and description are required', 'INVALID_AUCTION_TEXT');
-    }
-
-    try {
-      new URL(imageUrl);
-    } catch {
-      throw new BadRequestError('imageUrl must be a valid URL', 'INVALID_AUCTION_IMAGE');
     }
 
     if (!/^[A-Z]{3}$/.test(currency)) {
@@ -184,6 +181,7 @@ export class AuctionService {
       onAuctionStarted: (snapshot) => realtimeService.broadcastAuctionStarted(snapshot),
       onAuctionEnded: (snapshot) => realtimeService.broadcastAuctionEnded(snapshot)
     });
+    realtimeService.broadcastAuctionCreated(auction);
 
     return auction;
   }
@@ -257,6 +255,32 @@ export class AuctionService {
     const parsed = Number(value);
 
     return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+  }
+
+  private normalizeImage(input: CreateAuctionInput): string {
+    const imageDataUrl = typeof input.imageDataUrl === 'string' ? input.imageDataUrl.trim() : '';
+
+    if (imageDataUrl) {
+      if (!IMAGE_DATA_URL_PATTERN.test(imageDataUrl) || Buffer.byteLength(imageDataUrl, 'utf8') > MAX_IMAGE_DATA_URL_BYTES) {
+        throw new BadRequestError('imageDataUrl must be a PNG, JPEG, or WEBP image up to 2.5 MB', 'INVALID_AUCTION_IMAGE');
+      }
+
+      return imageDataUrl;
+    }
+
+    const imageUrl = typeof input.imageUrl === 'string' ? input.imageUrl.trim() : '';
+
+    if (!imageUrl) {
+      throw new BadRequestError('An auction image upload is required', 'INVALID_AUCTION_IMAGE');
+    }
+
+    try {
+      new URL(imageUrl);
+    } catch {
+      throw new BadRequestError('imageUrl must be a valid URL', 'INVALID_AUCTION_IMAGE');
+    }
+
+    return imageUrl;
   }
 }
 

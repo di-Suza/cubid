@@ -11,7 +11,7 @@ import { DEFAULT_CURRENCY } from '../shared/constants/auction.js';
 import { passwordService } from '../shared/utils/password.js';
 
 const DEMO_PASSWORD = 'Password123!';
-const demoEmails = ['seller@bidarena.demo', 'bidder@bidarena.demo', 'rival@bidarena.demo'];
+const demoEmails = ['seller@cubid.demo', 'bidder@cubid.demo', 'rival@cubid.demo'];
 const demoTitles = [
   'Demo Vintage Camera',
   'Demo Mechanical Keyboard',
@@ -230,14 +230,14 @@ const seed = async (): Promise<void> => {
       password: DEMO_PASSWORD,
       auctions: demoTitles
     },
-    'BidArena demo data seeded'
+    'Cubid demo data seeded'
   );
 
   await databaseConnection.disconnect();
 };
 
 void seed().catch(async (error) => {
-  logger.error({ error }, 'Failed to seed BidArena demo data');
+  logger.error({ error }, 'Failed to seed Cubid demo data');
   await databaseConnection.disconnect();
   process.exit(1);
 });

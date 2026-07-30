@@ -81,7 +81,7 @@ export const SignInPage = () => {
           </Button>
         </form>
         <p className="auth-switch">
-          New to BidArena? <Link to="/sign-up">Create an account</Link>
+          New to Cubid? <Link to="/sign-up">Create an account</Link>
         </p>
       </div>
     </section>

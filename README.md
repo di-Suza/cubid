@@ -1,6 +1,6 @@
-# Cubid BidArena
+# Cubid
 
-Cubid is the BidArena hack-sprint workspace. The repository is intentionally
+Cubid is the hack-sprint workspace. The repository is intentionally
 prepared as an industry-style full-stack TypeScript monorepo before feature
 implementation starts.
 
@@ -8,13 +8,16 @@ The current baseline contains:
 
 - `api`: Express, MongoDB, Socket.IO, middleware, errors, validators, configs,
   health checks, domain skeletons, and the Domain B server-authoritative auction
-  engine plus Domain A auth, marketplace, owner, and payment REST flows.
+  engine plus Domain A auth, marketplace, owner, image upload, and payment REST
+  flows.
 - `web`: React, Vite, routing, app providers, RTK Query, shared UI, socket
   client, realtime auction hooks, live room UI, auth screens, marketplace
   discovery, creation, dashboard, wins, profile, and app shell.
 - `contracts`: API contract ownership and future OpenAPI location.
 - `tests`: test strategy and planned gates.
 - `docs`: architecture decisions and implementation guidance.
+- `docs/VIDEO_RECORDING_SCRIPT.md`: demo narration and screen-flow checklist
+  for the Domain A and Domain B recording.
 
 Feature logic should be added inside the existing module boundaries instead of
 creating ad hoc folders.
@@ -35,14 +38,14 @@ Local defaults:
 
 - API: `http://localhost:8081`
 - API base URL: `http://localhost:8081/api`
-- Web: `http://localhost:5173`
+- Web: `http://localhost:5073`
 
 Demo seed:
 
 - Start MongoDB first, for example `docker compose up -d mongo`.
 - Run `npm run seed:demo`.
 - Demo accounts use `Password123!`:
-  `seller@bidarena.demo`, `bidder@bidarena.demo`, and `rival@bidarena.demo`.
+  `seller@cubid.demo`, `bidder@cubid.demo`, and `rival@cubid.demo`.
 
 E2E smoke:
 
@@ -83,7 +86,8 @@ Domain A now owns the usable marketplace path around the engine:
 - Public auction discovery and detail REST endpoints.
 - Authenticated auction creation with seller-derived ownership.
 - Owner dashboard and my-auctions queries.
-- Winner payment list and mock success/failure checkout UX.
+- Winner payment list, checkout-order creation, server payment verification,
+  mock/Razorpay/Stripe gateway boundary, and webhook processing.
 - Profile, route guards, authenticated shell navigation, and public landing.
 
 Live bidding remains socket-authoritative through Domain B; the web room uses

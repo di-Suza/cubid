@@ -25,7 +25,7 @@
 
 .auction-room-header h1 {
   margin: 8px 0 10px;
-  color: #17212b;
+  color: var(--color-ink);
   font-size: clamp(28px, 4vw, 44px);
   line-height: 1.1;
 }
@@ -44,24 +44,24 @@
 }
 
 .auction-room-header__status--ACTIVE {
-  background: #e8f3ed;
-  color: #137147;
+  background: rgba(18, 184, 134, 0.16);
+  color: #5eead4;
 }
 
 .auction-room-header__status--UPCOMING,
 .auction-room-header__status--loading {
-  background: #fff6db;
-  color: #815b00;
+  background: rgba(251, 191, 36, 0.14);
+  color: var(--color-warning);
 }
 
 .auction-room-header__status--COMPLETED {
-  background: #e9eef6;
-  color: #33485f;
+  background: rgba(167, 139, 250, 0.16);
+  color: #c4b5fd;
 }
 
 .auction-room-header__status--CANCELLED {
-  background: #fdecec;
-  color: #b42318;
+  background: rgba(251, 113, 133, 0.14);
+  color: var(--color-danger);
 }
 
 .auction-room-header__actions {
@@ -72,20 +72,20 @@
 }
 
 .auction-room-signal {
-  border: 1px solid #d9e1ea;
-  background: #ffffff;
-  color: #65758b;
+  border: 1px solid var(--color-line);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-subtle);
 }
 
 .auction-room-signal--online {
-  border-color: #bfe5cf;
-  color: #137147;
+  border-color: #a9efd3;
+  color: #087f5b;
 }
 
 .auction-room-alert {
   border: 1px solid #f4c7c3;
   border-radius: 8px;
-  background: #fff5f4;
+  background: rgba(251, 113, 133, 0.12);
   color: #b42318;
   padding: 12px 14px;
   font-weight: 700;
@@ -101,10 +101,10 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 16px;
-  border: 1px solid #cfe0f2;
+  border: 1px solid var(--color-line);
   border-radius: 8px;
-  background: #f4f8fc;
-  color: #33485f;
+  background: rgba(var(--color-accent-rgb), 0.1);
+  color: var(--color-muted);
   padding: 12px 14px;
   font-size: 14px;
   font-weight: 700;
@@ -116,7 +116,7 @@
   align-items: center;
   gap: 8px;
   border-radius: 8px;
-  background: #1167b1;
+  background: var(--color-coral);
   color: #ffffff;
   padding: 0 12px;
   text-decoration: none;
@@ -139,9 +139,10 @@
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
   overflow: hidden;
-  border: 1px solid #d9e1ea;
+  border: 1px solid var(--color-line);
   border-radius: 8px;
-  background: #ffffff;
+  background: rgba(21, 24, 33, 0.88);
+  box-shadow: var(--shadow-card);
 }
 
 .auction-room-hero img,
@@ -154,8 +155,8 @@
 .auction-room-hero__loading {
   display: grid;
   place-items: center;
-  background: #e9eef6;
-  color: #65758b;
+  background: rgba(var(--color-accent-rgb), 0.08);
+  color: var(--color-subtle);
   font-weight: 800;
 }
 
@@ -170,7 +171,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #137147;
+  color: var(--color-teal);
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -178,7 +179,7 @@
 
 .auction-room-hero__meta p {
   margin: 0;
-  color: #33485f;
+  color: var(--color-muted);
   line-height: 1.55;
 }
 
@@ -192,9 +193,10 @@
 .auction-room-panel,
 .auction-room-bid,
 .auction-room-lists > div {
-  border: 1px solid #d9e1ea;
+  border: 1px solid var(--color-line);
   border-radius: 8px;
-  background: #ffffff;
+  background: rgba(21, 24, 33, 0.88);
+  box-shadow: var(--shadow-card);
 }
 
 .auction-room-metrics article {
@@ -207,14 +209,14 @@
 
 .auction-room-metrics span,
 .auction-room-panel dt {
-  color: #65758b;
+  color: var(--color-subtle);
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .auction-room-metrics strong {
-  color: #17212b;
+  color: var(--color-ink);
   font-size: clamp(20px, 3vw, 30px);
   line-height: 1.1;
 }
@@ -245,7 +247,7 @@
 .auction-room-lists h2,
 .auction-room-panel h2 {
   margin: 0 0 14px;
-  color: #17212b;
+  color: var(--color-ink);
   font-size: 18px;
 }
 
@@ -260,7 +262,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  border-bottom: 1px solid #edf1f5;
+  border-bottom: 1px solid #f0e7dc;
   padding-bottom: 10px;
 }
 
@@ -270,13 +272,13 @@
 }
 
 .auction-room-list strong {
-  color: #17212b;
+  color: var(--color-ink);
 }
 
 .auction-room-list span,
 .auction-room-list p {
   margin: 0;
-  color: #65758b;
+  color: var(--color-muted);
   font-size: 14px;
 }
 
@@ -290,7 +292,7 @@
   display: flex;
   justify-content: space-between;
   gap: 14px;
-  border-bottom: 1px solid #edf1f5;
+  border-bottom: 1px solid #f0e7dc;
   padding-bottom: 10px;
 }
 
@@ -301,7 +303,7 @@
 
 .auction-room-panel dd {
   margin: 0;
-  color: #17212b;
+  color: var(--color-ink);
   font-weight: 800;
   text-align: right;
 }

@@ -8,6 +8,8 @@ export interface Payment {
   amountMinor: number;
   currency: string;
   gateway: PaymentGateway;
+  gatewayOrderId: string | null;
+  gatewayPaymentId: string | null;
   status: PaymentStatus;
   verifiedAt: string | null;
 }
