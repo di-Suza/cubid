@@ -4,7 +4,11 @@ import express from 'express';
 import helmet from 'helmet';
 
 import { env } from './config/env.js';
+import { auctionRoute } from './modules/auctions/index.js';
+import { authRoute } from './modules/auth/index.js';
 import { healthRoute } from './modules/health/index.js';
+import { paymentRoute } from './modules/payments/index.js';
+import { userRoute } from './modules/users/index.js';
 import {
   apiRateLimiter,
   errorHandler,
@@ -30,6 +34,10 @@ export const createApp = (): express.Express => {
   app.use(cookieParser(env.cookieSecret));
 
   app.use('/api/health', healthRoute.router);
+  app.use('/api/auth', authRoute.router);
+  app.use('/api/users', userRoute.router);
+  app.use('/api/auctions', auctionRoute.router);
+  app.use('/api/payments', paymentRoute.router);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
