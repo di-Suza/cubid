@@ -17,3 +17,28 @@ Contract rules:
 - Backend realtime payloads and frontend entity types must agree.
 - Breaking response changes require a docs update.
 - Error codes should be stable and machine-readable.
+
+## REST Contracts Implemented
+
+Auth:
+
+- `POST /api/auth/register` -> `{ accessToken, user }` and refresh cookie.
+- `POST /api/auth/login` -> `{ accessToken, user }` and refresh cookie.
+- `POST /api/auth/refresh` -> `{ accessToken, user }` from refresh cookie.
+- `POST /api/auth/logout` -> clears/revokes refresh cookie.
+- `GET /api/auth/me` and `GET /api/users/me` -> `{ user }`.
+
+Auctions:
+
+- `GET /api/auctions?page&limit&status&search` -> `{ items, meta }`.
+- `POST /api/auctions` -> `{ auction }`; seller is derived from auth.
+- `GET /api/auctions/me?page&limit&status` -> authenticated owner auctions.
+- `GET /api/auctions/:auctionId` -> public-safe auction detail.
+
+Payments:
+
+- `GET /api/payments/me/wins` -> winner payment records with auction summary.
+- `POST /api/payments/:paymentId/mock-checkout` with
+  `{ outcome: "SUCCESSFUL" | "FAILED" }` -> persisted payment status.
+
+Live bids remain Socket.IO-only through `bid:place`; REST does not create bids.

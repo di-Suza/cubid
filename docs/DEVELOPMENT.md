@@ -36,6 +36,30 @@ Domain B owns realtime sync and the server-authoritative auction engine. Domain
 A marketplace/auth/listing modules should not be changed for Domain B work
 unless a shared contract update is required.
 
+Current Domain A REST/UI ownership:
+
+- Auth/session flows live in `api/src/modules/auth`, `api/src/modules/users`,
+  and `web/src/features/auth`.
+- Marketplace listing and creation flows live in `api/src/modules/auctions`
+  and `web/src/features/auctions`.
+- Winner payment UX lives in `api/src/modules/payments` and
+  `web/src/features/payments`.
+- App shell, route guards, dashboard, profile, and landing pages live in the
+  existing frontend layers.
+
+When adding Domain A behavior, keep REST endpoints as DTOs and keep live bid
+submission on Socket.IO through `useBidIntent`.
+
+## Demo Data
+
+Use `npm run seed:demo` after MongoDB is running to create deterministic demo
+accounts and auctions. The script creates active, upcoming, and completed
+auctions, accepted bids, timeline records, a winner result, and a pending mock
+payment without touching real payment providers.
+
+The smoke runner `npm run test:e2e:smoke` can be used after starting the API to
+exercise the public and protected marketplace REST path.
+
 ## Commit Style
 
 Use concise conventional commits:

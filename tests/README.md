@@ -5,12 +5,17 @@ can compile and run independently.
 
 Current executable gates:
 
+- API auth/session service rules
+- API auction creation, discovery, owner query, and winner payment rules
 - API auction queue serialization
 - API bid validation, ordering, duplicate request handling, and finalization
 - API room presence accounting
 - API realtime room/bid/chat handler behavior
 - API timer restore start/end reconciliation
 - Web TypeScript checks for realtime room hooks and live room composition
+- Web TypeScript checks for auth/session pages, marketplace pages, dashboard,
+  payment UX, profile, route guards, and app shell
+- Optional E2E smoke runner for a running local API
 
 Planned gates:
 

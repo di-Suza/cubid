@@ -30,10 +30,18 @@ export interface AuctionSummary {
   currency: string;
   startingBidMinor: number;
   currentHighestBidMinor: number;
+  highestBidder?: PublicUser | null;
   minimumIncrementMinor: number;
+  bidCount?: number;
   status: AuctionStatus;
   startAt: string;
   endAt: string;
+  version?: number;
+  lastSequence?: number;
+  finalizedAt?: string | null;
+  winner?: PublicUser | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuctionSnapshot {

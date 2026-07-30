@@ -5,6 +5,34 @@ import { baseQuery } from './baseQuery';
 
 const refreshMutex = new Mutex();
 
+const isRefreshRequest = (args: string | FetchArgs): boolean => {
+  if (typeof args === 'string') {
+    return args === '/auth/refresh';
+  }
+
+  return args.url === '/auth/refresh';
+};
+
+const isAuthRefreshResponse = (
+  value: unknown
+): value is { success: true; data: { accessToken: string; user: unknown } } => {
+  if (!value || typeof value !== 'object' || !('success' in value) || !('data' in value)) {
+    return false;
+  }
+
+  const response = value as { success?: unknown; data?: unknown };
+  const data = response.data;
+
+  return (
+    response.success === true &&
+    data !== null &&
+    data !== undefined &&
+    typeof data === 'object' &&
+    'accessToken' in data &&
+    typeof (data as { accessToken?: unknown }).accessToken === 'string'
+  );
+};
+
 export const baseQueryWithAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
@@ -14,7 +42,7 @@ export const baseQueryWithAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBa
 
   const result = await baseQuery(args, api, extraOptions);
 
-  if (result.error?.status !== 401) {
+  if (result.error?.status !== 401 || isRefreshRequest(args)) {
     return result;
   }
 
@@ -22,7 +50,19 @@ export const baseQueryWithAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBa
     const release = await refreshMutex.acquire();
 
     try {
-      await baseQuery({ url: '/auth/refresh', method: 'POST' }, api, extraOptions);
+      const refreshResult = await baseQuery({ url: '/auth/refresh', method: 'POST' }, api, extraOptions);
+
+      if (isAuthRefreshResponse(refreshResult.data)) {
+        api.dispatch({
+          type: 'auth/setCredentials',
+          payload: refreshResult.data.data
+        });
+      } else {
+        api.dispatch({
+          type: 'auth/clearCredentials'
+        });
+        return result;
+      }
     } finally {
       release();
     }

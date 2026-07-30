@@ -1,6 +1,7 @@
 import type { FilterQuery } from 'mongoose';
 
 import type { EngineAuctionRecord } from '../auction-engine/auctionEngine.types.js';
+import type { CreateAuctionRepositoryInput, ListAuctionsQuery } from './auction.service.js';
 import { AuctionModel, type AuctionDocument } from './auction.model.js';
 
 type LeanAuction = Record<string, any>;
@@ -27,6 +28,74 @@ export class AuctionRepository {
 
   get model(): typeof this.auctionModel {
     return this.auctionModel;
+  }
+
+  async createAuction(input: CreateAuctionRepositoryInput): Promise<EngineAuctionRecord> {
+    const created = await this.auctionModel.create({
+      sellerId: input.sellerId,
+      title: input.title,
+      description: input.description,
+      imageUrl: input.imageUrl,
+      currency: input.currency,
+      startingBidMinor: input.startingBidMinor,
+      minimumIncrementMinor: input.minimumIncrementMinor,
+      currentHighestBidMinor: 0,
+      highestBidderId: null,
+      bidCount: 0,
+      startAt: input.startAt,
+      endAt: input.endAt,
+      status: input.status,
+      version: 0,
+      lastSequence: 0,
+      finalizedAt: null,
+      winnerId: null
+    });
+
+    const auction = await this.auctionModel
+      .findById(created._id)
+      .populate('sellerId', 'name')
+      .populate('highestBidderId', 'name')
+      .populate('winnerId', 'name')
+      .lean();
+
+    return this.toEngineRecord(auction as LeanAuction);
+  }
+
+  async listAuctions(query: ListAuctionsQuery): Promise<{ items: EngineAuctionRecord[]; total: number }> {
+    const filter: FilterQuery<AuctionDocument> = {};
+
+    if (query.status) {
+      filter.status = query.status;
+    }
+
+    if (query.sellerId) {
+      filter.sellerId = query.sellerId;
+    }
+
+    if (query.search) {
+      filter.$text = {
+        $search: query.search
+      };
+    }
+
+    const skip = (query.page - 1) * query.limit;
+    const [auctions, total] = await Promise.all([
+      this.auctionModel
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(query.limit)
+        .populate('sellerId', 'name')
+        .populate('highestBidderId', 'name')
+        .populate('winnerId', 'name')
+        .lean(),
+      this.auctionModel.countDocuments(filter)
+    ]);
+
+    return {
+      items: auctions.map((auction) => this.toEngineRecord(auction as LeanAuction)),
+      total
+    };
   }
 
   async findById(auctionId: string): Promise<EngineAuctionRecord | null> {
