@@ -6,6 +6,8 @@ Security rules are part of the architecture, not optional polish.
 - Store refresh tokens only as hashes.
 - Keep refresh tokens in HTTP-only cookies.
 - Keep access tokens out of persistent browser storage.
+- Current auth implementation returns access tokens to in-memory Redux state
+  and stores refresh tokens as HTTP-only cookies with server-side hashes.
 - Validate HTTP and socket payloads.
 - Authenticate every protected HTTP route and socket handler.
 - Enforce seller self-bid prevention on the server.

@@ -82,3 +82,24 @@ Frontend Domain B code currently lives in reusable hooks and shared contracts:
 `useAuctionRoom` for room lifecycle/snapshots and `useBidIntent` for bid intent
 acks. The live auction room page composes snapshots, bid form state, recent
 bids, timeline, room metrics, payment state, and chat.
+
+## Domain A Runtime
+
+Domain A is implemented around REST APIs and RTK Query pages that surround the
+realtime engine.
+
+- `AuthService` creates JWT access tokens and HTTP-only refresh sessions whose
+  stored refresh tokens are hashed.
+- `UserService` exposes the current authenticated user without password hashes.
+- `AuctionService` creates auctions from the authenticated seller, records
+  `AUCTION_CREATED`, schedules Domain B timers, lists public auctions, returns
+  public detail DTOs, and lists owner auctions.
+- `PaymentService` lists winner payment records and performs mock checkout
+  transitions only for the persisted winner.
+- The web app restores sessions on boot, reconnects Socket.IO with the current
+  access token, guards protected routes, and uses RTK Query for marketplace
+  screens.
+
+REST detail/list data is public-safe marketplace data. Mutable live state,
+bid acceptance, timer completion, winner declaration, and room payment status
+remain server-authoritative through Domain B snapshots.

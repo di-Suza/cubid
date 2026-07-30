@@ -11,6 +11,10 @@ Normal tests must not require network calls.
 
 Current coverage includes:
 
+- `AuthService` registration, duplicate email, login, refresh restore, and
+  logout revocation
+- `AuctionService` creation validation, public discovery/detail, owner queries,
+  and stable not-found behavior
 - `AuctionQueueService` per-auction serialization
 - `AuctionEngineService` accepted/rejected bid rules, duplicate request IDs,
   winner finalization, and no-bid finalization
@@ -19,3 +23,5 @@ Current coverage includes:
   non-blocking chat broadcast
 - `AuctionTimerService` overdue start/end recovery
 - `ChatService` authenticated trim/persist validation
+- `PaymentService` winner payment listing, non-winner rejection, and mock
+  success/failure transitions

@@ -11,3 +11,7 @@ Priority journeys:
 - Refresh/reconnect and resync
 - Finalize auction
 - Winner payment retry/success
+
+Domain A now has stable routes and API contracts for these journeys. E2E can
+target the public discovery route, protected create/dashboard routes, and the
+winner payment page once deterministic seed data is added.
