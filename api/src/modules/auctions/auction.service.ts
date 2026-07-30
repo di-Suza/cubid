@@ -2,12 +2,15 @@ import { realtimeService } from '../../infrastructure/realtime/index.js';
 import { auctionTimerService } from '../auction-engine/auctionTimer.service.js';
 import type {
   AuctionEngineActor,
+  AuctionEngineAuctionRepository,
   AuctionEngineTimelineRepository,
+  AuctionSnapshot,
   EngineAuctionRecord
 } from '../auction-engine/auctionEngine.types.js';
 import { timelineRepository } from '../timeline/timeline.repository.js';
-import { DEFAULT_CURRENCY, type AuctionStatus } from '../../shared/constants/auction.js';
+import { AUCTION_STATUSES, DEFAULT_CURRENCY, type AuctionStatus } from '../../shared/constants/auction.js';
 import { BadRequestError } from '../../shared/errors/BadRequestError.js';
+import { NotFoundError } from '../../shared/errors/NotFoundError.js';
 import { UnauthorizedError } from '../../shared/errors/UnauthorizedError.js';
 import { auctionRepository, type AuctionRepository } from './auction.repository.js';
 
@@ -38,26 +41,60 @@ export interface CreateAuctionRepositoryInput {
   status: AuctionStatus;
 }
 
+export interface ListAuctionsInput {
+  page?: unknown;
+  limit?: unknown;
+  status?: unknown;
+  search?: unknown;
+}
+
+export interface ListAuctionsQuery {
+  page: number;
+  limit: number;
+  status?: AuctionStatus;
+  search?: string;
+}
+
+export interface AuctionListResult {
+  items: EngineAuctionRecord[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    hasNextPage: boolean;
+  };
+}
+
 export interface AuctionCreationRepositoryPort {
   createAuction(input: CreateAuctionRepositoryInput): Promise<EngineAuctionRecord>;
 }
 
+export interface AuctionDiscoveryRepositoryPort {
+  listAuctions(query: ListAuctionsQuery): Promise<{ items: EngineAuctionRecord[]; total: number }>;
+  findById(auctionId: string): Promise<EngineAuctionRecord | null>;
+}
+
+export interface AuctionRepositoryPort
+  extends AuctionCreationRepositoryPort,
+    AuctionDiscoveryRepositoryPort,
+    AuctionEngineAuctionRepository {}
+
 export interface AuctionSchedulerPort {
   scheduleAuction(auction: EngineAuctionRecord, callbacks?: {
-    onAuctionStarted?: (snapshot: import('../auction-engine/auctionEngine.types.js').AuctionSnapshot) => void;
-    onAuctionEnded?: (snapshot: import('../auction-engine/auctionEngine.types.js').AuctionSnapshot) => void;
+    onAuctionStarted?: (snapshot: AuctionSnapshot) => void;
+    onAuctionEnded?: (snapshot: AuctionSnapshot) => void;
   }): void;
 }
 
 interface AuctionServiceDependencies {
-  auctions?: AuctionCreationRepositoryPort;
+  auctions?: AuctionRepositoryPort;
   timelines?: AuctionEngineTimelineRepository;
   scheduler?: AuctionSchedulerPort;
   now?: () => Date;
 }
 
 export class AuctionService {
-  private readonly auctions: AuctionCreationRepositoryPort;
+  private readonly auctions: AuctionRepositoryPort;
   private readonly timelines: AuctionEngineTimelineRepository;
   private readonly scheduler: AuctionSchedulerPort;
   private readonly now: () => Date;
@@ -148,6 +185,55 @@ export class AuctionService {
     });
 
     return auction;
+  }
+
+  async listAuctions(input: ListAuctionsInput = {}): Promise<AuctionListResult> {
+    const query = this.normalizeListQuery(input);
+    const result = await this.auctions.listAuctions(query);
+
+    return {
+      items: result.items,
+      meta: {
+        page: query.page,
+        limit: query.limit,
+        total: result.total,
+        hasNextPage: query.page * query.limit < result.total
+      }
+    };
+  }
+
+  async getAuctionDetail(auctionId: string): Promise<EngineAuctionRecord> {
+    const auction = await this.auctions.findById(auctionId);
+
+    if (!auction) {
+      throw new NotFoundError('Auction not found', 'AUCTION_NOT_FOUND');
+    }
+
+    return auction;
+  }
+
+  private normalizeListQuery(input: ListAuctionsInput): ListAuctionsQuery {
+    const page = this.parsePositiveInteger(input.page, 1);
+    const limit = Math.min(this.parsePositiveInteger(input.limit, 20), 100);
+    const status = typeof input.status === 'string' && AUCTION_STATUSES.includes(input.status as AuctionStatus)
+      ? (input.status as AuctionStatus)
+      : undefined;
+    const search = typeof input.search === 'string' && input.search.trim()
+      ? input.search.trim().slice(0, 120)
+      : undefined;
+
+    return {
+      page,
+      limit,
+      status,
+      search
+    };
+  }
+
+  private parsePositiveInteger(value: unknown, fallback: number): number {
+    const parsed = Number(value);
+
+    return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
   }
 }
 

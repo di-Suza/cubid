@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 
 import { AuctionService } from '../../src/modules/auctions/auction.service.js';
 import type {
-  AuctionCreationRepositoryPort,
+  AuctionRepositoryPort,
   AuctionSchedulerPort,
   CreateAuctionRepositoryInput
 } from '../../src/modules/auctions/auction.service.js';
@@ -41,12 +41,39 @@ const createAuctionRecord = (input: CreateAuctionRepositoryInput): EngineAuction
   updatedAt: baseNow
 });
 
-class FakeAuctionRepository implements AuctionCreationRepositoryPort {
+class FakeAuctionRepository implements AuctionRepositoryPort {
   created?: CreateAuctionRepositoryInput;
 
   async createAuction(input: CreateAuctionRepositoryInput) {
     this.created = input;
     return createAuctionRecord(input);
+  }
+
+  async listAuctions() {
+    return {
+      items: [],
+      total: 0
+    };
+  }
+
+  async findById() {
+    return null;
+  }
+
+  async findSchedulableAuctions() {
+    return [];
+  }
+
+  async startAuction() {
+    return null;
+  }
+
+  async applyAcceptedBid() {
+    return null;
+  }
+
+  async finalizeAuction() {
+    return null;
   }
 }
 

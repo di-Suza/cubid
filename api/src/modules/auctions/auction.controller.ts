@@ -30,6 +30,18 @@ const toAuctionDto = (auction: EngineAuctionRecord) => ({
 export class AuctionController {
   constructor(private readonly service: AuctionService = auctionService) {}
 
+  list = async (req: Request, res: Response): Promise<void> => {
+    const result = await this.service.listAuctions(req.query);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: {
+        items: result.items.map(toAuctionDto),
+        meta: result.meta
+      }
+    });
+  };
+
   create = async (req: Request, res: Response): Promise<void> => {
     const auction = await this.service.createAuction(req.body, {
       userId: req.user?.id,
@@ -37,6 +49,17 @@ export class AuctionController {
     });
 
     res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      data: {
+        auction: toAuctionDto(auction)
+      }
+    });
+  };
+
+  detail = async (req: Request, res: Response): Promise<void> => {
+    const auction = await this.service.getAuctionDetail(String(req.params.auctionId));
+
+    res.status(HTTP_STATUS.OK).json({
       success: true,
       data: {
         auction: toAuctionDto(auction)
