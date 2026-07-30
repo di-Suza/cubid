@@ -120,6 +120,191 @@
   justify-content: flex-end;
 }
 
+.market-link-button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #1167b1;
+  color: #ffffff;
+  padding: 0 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.market-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(260px, 360px);
+  align-items: end;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.market-results-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #52677e;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.auction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.auction-card {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid #d9e1ea;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(23, 33, 43, 0.06);
+}
+
+.auction-card img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: #e9eef6;
+}
+
+.auction-card__body {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.auction-card__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #65758b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-pill {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 10px;
+}
+
+.status-pill--ACTIVE {
+  background: #e8f3ed;
+  color: #137147;
+}
+
+.status-pill--UPCOMING {
+  background: #fff6db;
+  color: #815b00;
+}
+
+.status-pill--COMPLETED {
+  background: #e9eef6;
+  color: #33485f;
+}
+
+.status-pill--CANCELLED {
+  background: #fdecec;
+  color: #b42318;
+}
+
+.auction-card h2 {
+  margin: 0;
+  color: #17212b;
+  font-size: 19px;
+  line-height: 1.25;
+}
+
+.auction-card h2 a {
+  text-decoration: none;
+}
+
+.auction-card h2 a:hover {
+  color: #1167b1;
+}
+
+.auction-card p {
+  display: -webkit-box;
+  min-height: 44px;
+  overflow: hidden;
+  margin: 0;
+  color: #52677e;
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.auction-card dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.auction-card dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #edf1f5;
+  padding-top: 8px;
+}
+
+.auction-card dt {
+  color: #65758b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.auction-card dd {
+  margin: 0;
+  color: #17212b;
+  font-weight: 800;
+  text-align: right;
+}
+
+.market-state {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+  gap: 10px;
+  border: 1px solid #d9e1ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 28px;
+  text-align: center;
+}
+
+.market-state h2,
+.market-state p {
+  margin: 0;
+}
+
+.market-state h2 {
+  color: #17212b;
+  font-size: 22px;
+}
+
+.market-state p {
+  color: #52677e;
+}
+
+.market-state--error p {
+  color: #b42318;
+  font-weight: 800;
+}
+
 @media (max-width: 760px) {
   .market-page,
   .market-page--narrow {
@@ -130,7 +315,9 @@
   .market-page__header,
   .market-form__grid,
   .market-form__grid--three,
-  .market-form__schedule {
+  .market-form__schedule,
+  .market-toolbar,
+  .auction-grid {
     grid-template-columns: 1fr;
   }
 

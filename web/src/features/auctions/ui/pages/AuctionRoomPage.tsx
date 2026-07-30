@@ -1,10 +1,13 @@
 import { FormEvent, useMemo, useState } from 'react';
-import { Gavel, RefreshCw, ShieldCheck, Wifi, WifiOff } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { Gavel, LogIn, RefreshCw, ShieldCheck, Wifi, WifiOff } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
 
 import { useBidIntent } from '../../../bids';
 import { AuctionChatPanel, useAuctionChat } from '../../../chat';
+import { useAppSelector } from '../../../../app/store/hooks';
 import { Button, Input } from '../../../../shared/ui';
+import { getErrorMessage } from '../../../../shared/utils';
+import { useGetAuctionDetailQuery } from '../../api/auction.api';
 import { useAuctionRoom } from '../hooks/useAuctionRoom';
 import './AuctionRoomPage.css';
 
@@ -33,7 +36,9 @@ const toAmountMinor = (value: string): number | null => {
 
 export const AuctionRoomPage = () => {
   const { auctionId } = useParams();
+  const currentUser = useAppSelector((state) => state.auth.user);
   const [bidAmount, setBidAmount] = useState('');
+  const detailQuery = useGetAuctionDetailQuery(auctionId ?? '', { skip: !auctionId });
   const { connected, error, lastRejection, resync, snapshot, status } = useAuctionRoom({ auctionId });
   const chat = useAuctionChat({ auctionId, enabled: Boolean(snapshot?.permissions.canChat) });
   const bidIntent = useBidIntent({
@@ -47,6 +52,21 @@ export const AuctionRoomPage = () => {
     [snapshot]
   );
   const bidErrorMessage = bidIntent.error ?? (lastRejection && !lastRejection.ok ? lastRejection.message : null);
+  const detail = detailQuery.data;
+  const title = snapshot?.title ?? detail?.title ?? 'Auction room';
+  const description = snapshot?.description ?? detail?.description ?? 'Waiting for the authoritative room snapshot.';
+  const imageUrl = snapshot?.imageUrl ?? detail?.imageUrl;
+  const currency = snapshot?.currency ?? detail?.currency ?? 'INR';
+  const roomStatus = snapshot?.status ?? detail?.status ?? status;
+  const currentBidMinor = snapshot?.currentHighestBidMinor ?? detail?.currentHighestBidMinor ?? 0;
+  const minimumNextBidMinor = snapshot?.minimumNextBidMinor ?? detail?.startingBidMinor ?? 0;
+  const modeMessage = !currentUser
+    ? 'Guests can watch this room live. Sign in to bid or send chat.'
+    : snapshot?.permissions.isOwner
+      ? 'Owner view is read-only for bidding, so the auction engine can prevent self-bids.'
+      : snapshot && !snapshot.permissions.canBid
+        ? 'Bidding is closed or not available for this room state.'
+        : null;
 
   const handleBidSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -72,9 +92,9 @@ export const AuctionRoomPage = () => {
       <header className="auction-room-header">
         <div>
           <p className="eyebrow">Live room</p>
-          <h1>{snapshot?.title ?? 'Auction room'}</h1>
-          <span className={`auction-room-header__status auction-room-header__status--${snapshot?.status ?? 'loading'}`}>
-            {snapshot?.status ?? status}
+          <h1>{title}</h1>
+          <span className={`auction-room-header__status auction-room-header__status--${roomStatus}`}>
+            {roomStatus}
           </span>
         </div>
         <div className="auction-room-header__actions">
@@ -89,12 +109,26 @@ export const AuctionRoomPage = () => {
       </header>
 
       {error ? <p className="auction-room-alert">{error}</p> : null}
+      {detailQuery.error && !snapshot ? (
+        <p className="auction-room-alert">{getErrorMessage(detailQuery.error, 'Unable to load auction detail')}</p>
+      ) : null}
+      {modeMessage ? (
+        <div className="auction-room-mode">
+          <span>{modeMessage}</span>
+          {!currentUser ? (
+            <Link to="/sign-in">
+              <LogIn size={16} />
+              Sign in
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="auction-room-grid">
         <main className="auction-room-main">
           <section className="auction-room-hero">
-            {snapshot ? (
-              <img alt={snapshot.title} src={snapshot.imageUrl} />
+            {imageUrl ? (
+              <img alt={title} src={imageUrl} />
             ) : (
               <div className="auction-room-hero__loading">Loading auction state</div>
             )}
@@ -103,18 +137,18 @@ export const AuctionRoomPage = () => {
                 <ShieldCheck size={16} />
                 Server authoritative
               </span>
-              <p>{snapshot?.description ?? 'Waiting for the authoritative room snapshot.'}</p>
+              <p>{description}</p>
             </div>
           </section>
 
           <section className="auction-room-metrics" aria-label="Auction metrics">
             <article>
               <span>Current bid</span>
-              <strong>{snapshot ? formatMoney(snapshot.currentHighestBidMinor, snapshot.currency) : '--'}</strong>
+              <strong>{formatMoney(currentBidMinor, currency)}</strong>
             </article>
             <article>
               <span>Minimum next</span>
-              <strong>{snapshot ? formatMoney(snapshot.minimumNextBidMinor, snapshot.currency) : '--'}</strong>
+              <strong>{formatMoney(minimumNextBidMinor, currency)}</strong>
             </article>
             <article>
               <span>Bids</span>
