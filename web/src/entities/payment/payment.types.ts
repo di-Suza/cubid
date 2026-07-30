@@ -11,3 +11,22 @@ export interface Payment {
   status: PaymentStatus;
   verifiedAt: string | null;
 }
+
+export interface WinnerPaymentAuction {
+  id: string;
+  title: string;
+  imageUrl: string;
+  currency: string;
+  winningAmountMinor: number;
+  status: 'UPCOMING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  endAt: string;
+  seller: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface WinnerPayment {
+  payment: Payment;
+  auction: WinnerPaymentAuction;
+}

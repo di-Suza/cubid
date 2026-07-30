@@ -45,6 +45,20 @@ export const auctionApi = api.injectEndpoints({
       transformResponse: (response: ApiSuccessResponse<{ auction: AuctionSummary }>) => response.data.auction,
       providesTags: (_result, _error, auctionId) => [{ type: 'Auction', id: auctionId }]
     }),
+    listMyAuctions: builder.query<PaginatedResponse<AuctionSummary>, ListAuctionsArgs | void>({
+      query: (args) => {
+        const query = buildAuctionListQuery(args ?? {});
+        return query.replace('/auctions?', '/auctions/me?');
+      },
+      transformResponse: (response: ApiSuccessResponse<PaginatedResponse<AuctionSummary>>) => response.data,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map((auction) => ({ type: 'Auction' as const, id: auction.id })),
+              { type: 'Auction' as const, id: 'MINE' }
+            ]
+          : [{ type: 'Auction' as const, id: 'MINE' }]
+    }),
     createAuction: builder.mutation<AuctionSummary, CreateAuctionPayload>({
       query: (body) => ({
         url: '/auctions',
@@ -52,9 +66,14 @@ export const auctionApi = api.injectEndpoints({
         body
       }),
       transformResponse: (response: ApiSuccessResponse<{ auction: AuctionSummary }>) => response.data.auction,
-      invalidatesTags: [{ type: 'Auction', id: 'LIST' }, 'Timeline']
+      invalidatesTags: [{ type: 'Auction', id: 'LIST' }, { type: 'Auction', id: 'MINE' }, 'Timeline']
     })
   })
 });
 
-export const { useCreateAuctionMutation, useGetAuctionDetailQuery, useListAuctionsQuery } = auctionApi;
+export const {
+  useCreateAuctionMutation,
+  useGetAuctionDetailQuery,
+  useListAuctionsQuery,
+  useListMyAuctionsQuery
+} = auctionApi;

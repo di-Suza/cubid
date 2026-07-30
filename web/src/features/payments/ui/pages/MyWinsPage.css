@@ -1,0 +1,160 @@
+.wins-page {
+  width: min(1120px, calc(100vw - 48px));
+  padding: 28px 0;
+}
+
+.wins-page__header {
+  margin-bottom: 18px;
+}
+
+.wins-page__header h1 {
+  margin: 8px 0 0;
+  color: #17212b;
+  font-size: 34px;
+  line-height: 1.12;
+}
+
+.wins-page__error {
+  border: 1px solid #f4c7c3;
+  border-radius: 8px;
+  background: #fff5f4;
+  color: #b42318;
+  padding: 10px 12px;
+  font-weight: 800;
+}
+
+.wins-list {
+  display: grid;
+  gap: 14px;
+}
+
+.wins-list article,
+.wins-state {
+  border: 1px solid #d9e1ea;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(23, 33, 43, 0.06);
+}
+
+.wins-list article {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 14px;
+}
+
+.wins-list img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.wins-list__body {
+  display: grid;
+  gap: 8px;
+}
+
+.wins-list__body h2,
+.wins-list__body p {
+  margin: 0;
+}
+
+.wins-list__body h2 {
+  color: #17212b;
+  font-size: 22px;
+}
+
+.wins-list__body p {
+  color: #52677e;
+}
+
+.wins-list__body strong {
+  color: #17212b;
+  font-size: 20px;
+}
+
+.payment-pill {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 28px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.payment-pill--PENDING,
+.payment-pill--FAILED {
+  background: #fff6db;
+  color: #815b00;
+}
+
+.payment-pill--SUCCESSFUL {
+  background: #e8f3ed;
+  color: #137147;
+}
+
+.payment-pill--NOT_REQUIRED {
+  background: #e9eef6;
+  color: #33485f;
+}
+
+.wins-list__actions {
+  display: grid;
+  justify-items: stretch;
+  gap: 10px;
+}
+
+.wins-list__actions a {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #c8d4e2;
+  border-radius: 8px;
+  color: #17212b;
+  padding: 0 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.wins-state {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+  gap: 10px;
+  padding: 28px;
+  text-align: center;
+}
+
+.wins-state h2,
+.wins-state p {
+  margin: 0;
+}
+
+.wins-state h2 {
+  color: #17212b;
+}
+
+.wins-state p {
+  color: #52677e;
+}
+
+.wins-state--error p {
+  color: #b42318;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .wins-page {
+    width: min(100%, calc(100vw - 24px));
+    padding: 18px 0;
+  }
+
+  .wins-list article {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,141 @@
+.landing-page {
+  width: min(1180px, calc(100vw - 48px));
+  padding: 22px 0 36px;
+}
+
+.landing-hero {
+  position: relative;
+  min-height: min(680px, calc(100vh - 150px));
+  overflow: hidden;
+  border-radius: 8px;
+  background: #17212b;
+}
+
+.landing-hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.62;
+}
+
+.landing-hero__content {
+  position: relative;
+  display: grid;
+  max-width: 680px;
+  min-height: min(680px, calc(100vh - 150px));
+  align-content: center;
+  gap: 18px;
+  padding: 56px;
+  color: #ffffff;
+}
+
+.landing-hero__content .eyebrow {
+  color: #d8e8f8;
+}
+
+.landing-hero h1 {
+  margin: 0;
+  font-size: clamp(42px, 7vw, 76px);
+  line-height: 0.98;
+}
+
+.landing-hero p {
+  margin: 0;
+  max-width: 620px;
+  color: #ecf3fb;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.landing-hero__content div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.landing-hero__content a,
+.landing-preview a {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.landing-hero__content a {
+  background: #ffffff;
+  color: #17212b;
+  padding: 0 14px;
+}
+
+.landing-hero__content a + a {
+  background: #1167b1;
+  color: #ffffff;
+}
+
+.landing-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.landing-preview a {
+  justify-content: start;
+  overflow: hidden;
+  border: 1px solid #d9e1ea;
+  background: #ffffff;
+  color: #17212b;
+  padding: 10px;
+}
+
+.landing-preview img {
+  width: 76px;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.landing-preview span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-preview strong {
+  margin-left: auto;
+  color: #137147;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .landing-page {
+    width: min(100%, calc(100vw - 24px));
+    padding: 12px 0 24px;
+  }
+
+  .landing-hero,
+  .landing-hero__content {
+    min-height: 560px;
+  }
+
+  .landing-hero__content {
+    padding: 28px;
+  }
+
+  .landing-hero__content div,
+  .landing-hero__content a {
+    width: 100%;
+  }
+
+  .landing-preview {
+    grid-template-columns: 1fr;
+  }
+}
