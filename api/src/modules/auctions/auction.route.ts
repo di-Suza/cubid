@@ -1,6 +1,9 @@
 import { Router } from 'express';
 
+import { requireAuth, validateRequest } from '../../shared/middleware/index.js';
+import { asyncHandler } from '../../shared/utils/asyncHandler.js';
 import { auctionController, type AuctionController } from './auction.controller.js';
+import { createAuctionValidators } from './validators/auction.validator.js';
 
 export class AuctionRoute {
   readonly router = Router();
@@ -10,7 +13,7 @@ export class AuctionRoute {
   }
 
   private register(): void {
-    // Auction endpoints will be registered when creation/discovery flows are implemented.
+    this.router.post('/', requireAuth, createAuctionValidators, validateRequest, asyncHandler(this.controller.create));
   }
 }
 
