@@ -1,5 +1,5 @@
 # Cubid is a full-stack real-time auction platform 
-## for creating listings, discovering live auctions, bidding in server-authoritative rooms, chatting in real time, and completing winner payments.
+## For creating listings, discovering live auctions, bidding in server-authoritative rooms, chatting in real time, and completing winner payments.
 
 
 
