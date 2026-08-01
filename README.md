@@ -1,4 +1,7 @@
-# Cubid is a full-stack real-time auction platform for creating listings, discovering live auctions, bidding in server-authoritative rooms, chatting in real time, and completing winner payments.
+# Cubid is a full-stack real-time auction platform 
+## for creating listings, discovering live auctions, bidding in server-authoritative rooms, chatting in real time, and completing winner payments.
+
+
 
 Cubid is built as a TypeScript monorepo with an Express API, MongoDB
 persistence, Socket.IO realtime rooms, a React/Vite frontend, and payment
